@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:walking_doggy/home.dart';
 
 void main() async {
+  print('1');
   WidgetsFlutterBinding.ensureInitialized();
+  print('2');
   await Firebase.initializeApp();
+  print('3');
   runApp(const Main());
+  print('4');
 }
 
 class Main extends StatelessWidget {
@@ -19,7 +23,7 @@ class Main extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.yellow,
       ),
-      home: const Home(title: 'Walking Doggy'),
+      home: const Home(),
     );
   }
 }

@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "956369174652",
+    "project_id": "walking-doggy",
+    "storage_bucket": "walking-doggy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:956369174652:android:40328054c2d612023ac9f9",
+        "android_client_info": {
+          "package_name": "com.alaland.walking_doggy.walking_doggy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "956369174652-amcf5k407je44lt24hnpm4ggv1077jj6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAKt0eTYF-hre-eXKaGC6_zZxPsN_VoGM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "956369174652-amcf5k407je44lt24hnpm4ggv1077jj6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "956369174652-9hb7mnbmfr4cfhfcc5fl4lkakqindju0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.alaland.walkingdoggy.walkingDoggy"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
