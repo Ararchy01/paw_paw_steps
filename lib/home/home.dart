@@ -1,9 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:walking_doggy/add_dog/add_dog.dart';
 import 'package:walking_doggy/domain/Dog.dart';
-import 'package:walking_doggy/home/home_model.dart';
+
+import 'home_stream_model.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -13,19 +14,16 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final Stream<QuerySnapshot> _dogsStream =
-      FirebaseFirestore.instance.collection('dogs').snapshots();
-
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<HomeModel>(
-      create: (_) => HomeModel()..fetchDogs(),
+    return ChangeNotifierProvider<HomeStreamModel>(
+      create: (_) => HomeStreamModel()..fetchDogs(),
       child: Scaffold(
-          appBar: AppBar(
-            title: const Icon(Icons.pets),
-          ),
-          body: Center(
-              child: Consumer<HomeModel>(builder: (context, model, child) {
+        appBar: AppBar(
+          title: const Icon(Icons.pets),
+        ),
+        body: Center(
+          child: Consumer<HomeStreamModel>(builder: (context, model, child) {
             final List<Dog>? dogs = model.dogs;
             if (dogs == null) {
               return const CircularProgressIndicator();
@@ -36,7 +34,21 @@ class _HomeState extends State<Home> {
                     subtitle: Text(dog.walkers.join(','))))
                 .toList();
             return ListView(children: widgets);
-          }))),
+          }),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            final Dog addDog = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const AddDog(),
+                    fullscreenDialog: true));
+          },
+          tooltip: 'Add Dog',
+          child: const Icon(Icons.add),
+        ),
+        
+      ),
     );
   }
 }
