@@ -17,7 +17,7 @@ class HomeStreamModel extends ChangeNotifier {
             document.data()! as Map<String, dynamic>;
         final String name = data['name'];
         final List<dynamic> walkers = data['walkers'];
-        return Dog(name, walkers);
+        return Dog(name, walkers,'');
       }).toList();
       this.dogs = dogs;
       notifyListeners();

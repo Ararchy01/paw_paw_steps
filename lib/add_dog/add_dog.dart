@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:walking_doggy/add_dog/add_dog_model.dart';
 import 'package:walking_doggy/domain/Dog.dart';
 
 class AddDog extends StatelessWidget {
@@ -29,18 +29,14 @@ class AddDog extends StatelessWidget {
             ),
             controller: _walkerController,
           ),
-          IconButton(
-              onPressed: () {
-                final Dog _newDog =
-                    Dog(_nameController.text, [_walkerController.text]);
-                FirebaseFirestore.instance
-                    .collection('dogs')
-                    .add({'name': _newDog.name, 'walkers': _newDog.walkers})
-                    .then((value) => print(value))
-                    .catchError((error) => print(error));
-                Navigator.pop(context, _newDog);
-              },
-              icon: const Icon(Icons.pets))
+          ElevatedButton(
+            onPressed: () {
+              final Dog _newDog = AddDogModel.addNewDog(
+                  _nameController.text, [_walkerController.text]);
+              Navigator.pop(context, _newDog);
+            },
+            child: const Text('Add Dog'),
+          )
         ],
       ),
     );

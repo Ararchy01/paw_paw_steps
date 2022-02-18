@@ -28,17 +28,26 @@ class _HomeState extends State<Home> {
             if (dogs == null) {
               return const CircularProgressIndicator();
             }
-            final List<Widget> widgets = dogs
-                .map((dog) => ListTile(
-                    title: Text(dog.name),
-                    subtitle: Text(dog.walkers.join(','))))
-                .toList();
-            return ListView(children: widgets);
+            return GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20,
+                children: dogs
+                    .map((dog) => Column(
+                          children: [
+                            Text(dog.name,
+                                style: TextStyle(
+                                    color: Colors.blueAccent,
+                                    textBaseline: TextBaseline.ideographic)),
+                            Text(dog.walkers.join('\n'))
+                          ],
+                        ))
+                    .toList());
           }),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            final Dog addDog = await Navigator.push(
+          onPressed: () {
+            Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => const AddDog(),
@@ -47,7 +56,6 @@ class _HomeState extends State<Home> {
           tooltip: 'Add Dog',
           child: const Icon(Icons.add),
         ),
-        
       ),
     );
   }
