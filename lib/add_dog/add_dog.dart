@@ -31,9 +31,9 @@ class AddDog extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              final Dog _newDog = AddDogModel.addNewDog(
+              AddDogModel.addNewDog(
                   _nameController.text, [_walkerController.text]);
-              Navigator.pop(context, _newDog);
+              Navigator.pop(context);
             },
             child: const Text('Add Dog'),
           )

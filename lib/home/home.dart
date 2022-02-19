@@ -1,5 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:walking_doggy/add_dog/add_dog.dart';
 import 'package:walking_doggy/domain/Dog.dart';
@@ -14,6 +17,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  void _upload() async {
+    print('1');
+    final pickerFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    File? file = File(pickerFile!.path); //TODO
+
+    FirebaseStorage storage = FirebaseStorage.instance;
+    try {
+      await storage.ref().putFile(file);
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<HomeStreamModel>(
@@ -31,15 +48,20 @@ class _HomeState extends State<Home> {
             return GridView.count(
                 crossAxisCount: 2,
                 crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
+                mainAxisSpacing: 250,
+                scrollDirection: Axis.vertical,
                 children: dogs
                     .map((dog) => Column(
                           children: [
+                            Image.network(
+                                'https://rosevalleywhiteshepherds.net/wp-content/uploads/2020/09/Bolt-Grand-Prairie-1024x1024.jpg',
+                            height: 50),
                             Text(dog.name,
-                                style: TextStyle(
-                                    color: Colors.blueAccent,
-                                    textBaseline: TextBaseline.ideographic)),
-                            Text(dog.walkers.join('\n'))
+                                style: TextStyle(color: Colors.blueAccent)),
+                            Text(dog.walkers.join('\n')),
+                            FloatingActionButton(
+                                onPressed: _upload,
+                                child: Icon(Icons.upload_file_outlined))
                           ],
                         ))
                     .toList());
