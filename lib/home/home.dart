@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:walking_doggy/add_dog/add_dog.dart';
 import 'package:walking_doggy/domain/Dog.dart';
+import 'package:walking_doggy/sign_in/sign_in.dart';
 
 import 'home_stream_model.dart';
 
@@ -67,17 +68,33 @@ class _HomeState extends State<Home> {
                     .toList());
           }),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const AddDog(),
-                    fullscreenDialog: true));
-          },
-          tooltip: 'Add Dog',
-          child: const Icon(Icons.add),
-        ),
+        floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AddDog(),
+                        fullscreenDialog: true));
+              },
+              tooltip: 'Add Dog',
+              child: const Icon(Icons.add),
+            ),
+            FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignIn(),
+                        fullscreenDialog: true));
+              },
+              tooltip: 'SignIn',
+              child: const Icon(Icons.accessible_outlined),
+            ),
+          ],
+        )
       ),
     );
   }
