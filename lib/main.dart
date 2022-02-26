@@ -7,14 +7,7 @@ import 'package:walking_doggy/register/register.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MaterialApp(
-    initialRoute: '/register',
-    routes: {
-      '/register' : (context) => const Register(),
-      '/login': (context) => const Login(),
-      '/home' : (context) => const Home(),
-    }
-  ));
+  runApp(const Main());
 }
 
 class Main extends StatelessWidget {
@@ -24,12 +17,15 @@ class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Walking Doggy',
-      theme: ThemeData(
-        primarySwatch: Colors.yellow,
-      ),
-      home: const Home(),
-    );
+        title: 'Pow Pow Steps',
+        theme: ThemeData(
+          primarySwatch: Colors.yellow,
+        ),
+        initialRoute: '/register',
+        routes: {
+          '/register': (context) => const Register(),
+          '/login': (context) => const Login(),
+          '/home': (context) => const Home(),
+        });
   }
 }
-

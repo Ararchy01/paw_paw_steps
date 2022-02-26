@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:walking_doggy/parts/padding_text_field.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
+
   @override
   _RegisterState createState() => _RegisterState();
 }
@@ -21,32 +23,13 @@ class _RegisterState extends State<Register> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: TextField(
-              onChanged: (value) {
-                email = value;
-              },
-              decoration: const InputDecoration(
-                hintText: 'Email',
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: TextField(
-              onChanged: (value) {
-                password = value;
-              },
-              obscureText: true,
-              decoration: const InputDecoration(
-                hintText: 'Password',
-              ),
-            ),
-          ),
+          PaddingTextField(hint: 'Email', onChanged: (value) => email = value),
+          PaddingTextField(
+              hint: 'Password',
+              onChanged: (value) => password = value,
+              obscureText: true),
           ElevatedButton(
             child: const Text('Register'),
-            //ステップ２
             onPressed: () async {
               try {
                 final newUser = await _auth.createUserWithEmailAndPassword(
