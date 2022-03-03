@@ -72,7 +72,6 @@ class _HomeState extends State<Home> {
           //TODO
           bottomNavigationBar: BottomNavigationBar(
             items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Pet'),
               BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Login'),
               BottomNavigationBarItem(icon: Icon(Icons.logout), label: 'Logout'),
               BottomNavigationBarItem(icon: Icon(Icons.app_registration), label: 'Register')
