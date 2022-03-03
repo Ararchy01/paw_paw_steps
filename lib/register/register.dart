@@ -12,8 +12,9 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final _auth = FirebaseAuth.instance;
 
-  late String email;
-  late String password;
+  String email = '';
+  String password = '';
+  String passwordConfirm = '';
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +23,16 @@ class _RegisterState extends State<Register> {
         title: const Text('Register'),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           PaddingTextField(hint: 'Email', onChanged: (value) => email = value),
           PaddingTextField(
               hint: 'Password',
               onChanged: (value) => password = value,
+              obscureText: true),
+          PaddingTextField(
+              hint: 'Confirm Password',
+              onChanged: (value) => passwordConfirm = value,
               obscureText: true),
           ElevatedButton(
             child: const Text('Register'),
@@ -49,7 +55,10 @@ class _RegisterState extends State<Register> {
                 }
               }
             },
-          )
+          ),
+          TextButton(
+              child: const Text('Already user? Login', style: TextStyle(color: Colors.blueAccent)) ,
+              onPressed: () => Navigator.pushNamed(context, '/login'))
         ],
       ),
     );

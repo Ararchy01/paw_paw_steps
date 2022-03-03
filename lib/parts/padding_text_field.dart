@@ -11,7 +11,7 @@ class PaddingTextField extends StatelessWidget {
       padding: const EdgeInsets.all(10.0),
       child: TextField(
         onChanged: onChanged,
-        obscureText: obscureText!,
+        obscureText: obscureText != null ? obscureText! : false,
         decoration: InputDecoration(
           hintText: hint,
         ),
