@@ -4,6 +4,8 @@ import 'package:walking_doggy/home/home.dart';
 import 'package:walking_doggy/login/login.dart';
 import 'package:walking_doggy/register/register.dart';
 
+import 'initial/initial.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -21,8 +23,9 @@ class Main extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.yellow,
         ),
-        initialRoute: '/register',
+        initialRoute: '/initial',
         routes: {
+          '/initial': (context) => const Initial(),
           '/register': (context) => const Register(),
           '/login': (context) => const Login(),
           '/home': (context) => const Home(),

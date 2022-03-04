@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:walking_doggy/domain/User.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -11,6 +12,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _auth = FirebaseAuth.instance;
+  final _userState = UserState();
   String _email = '';
   String _password = '';
   final TextEditingController _emailController = TextEditingController();
@@ -71,8 +73,9 @@ class _LoginState extends State<Login> {
                     print(_formKey.currentState);
                   } else {
                     try {
-                      await _auth.signInWithEmailAndPassword(
+                      final user = await _auth.signInWithEmailAndPassword(
                           email: _email, password: _password);
+
                       Navigator.pushNamed(context, '/home');
                     } on FirebaseAuthException catch (e) {
                       // TODO
