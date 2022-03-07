@@ -1,10 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:walking_doggy/home/home.dart';
-import 'package:walking_doggy/login/login.dart';
-import 'package:walking_doggy/register/register.dart';
+import 'package:provider/provider.dart';
 
+import 'domain/User.dart';
+import 'home/home.dart';
 import 'initial/initial.dart';
+import 'login/login.dart';
+import 'register/register.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,20 +17,22 @@ void main() async {
 class Main extends StatelessWidget {
   const Main({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Pow Pow Steps',
-        theme: ThemeData(
-          primarySwatch: Colors.yellow,
-        ),
-        initialRoute: '/initial',
-        routes: {
-          '/initial': (context) => const Initial(),
-          '/register': (context) => const Register(),
-          '/login': (context) => const Login(),
-          '/home': (context) => const Home(),
-        });
+    return ChangeNotifierProvider(
+      create: (context) => UserState(),
+      child: MaterialApp(
+          title: 'Pow Pow Steps',
+          theme: ThemeData(
+            primarySwatch: Colors.yellow,
+          ),
+          initialRoute: '/initial',
+          routes: {
+            '/initial': (context) => const Initial(),
+            '/register': (context) => const Register(),
+            '/login': (context) => const Login(),
+            '/home': (context) => const Home(),
+          }),
+    );
   }
 }

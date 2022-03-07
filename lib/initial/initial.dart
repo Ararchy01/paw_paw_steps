@@ -17,10 +17,12 @@ class _InitialState extends State<Initial> {
         ),
         body: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text(
+            const Text(
               'Pow Pow Steps',
-              style:
-                  TextStyle(color: Colors.brown, fontWeight: FontWeight.w900,fontSize: 40),
+              style: TextStyle(
+                  color: Colors.brown,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 40),
             ),
             ElevatedButton(
               child: const Text('Register'),
@@ -29,6 +31,10 @@ class _InitialState extends State<Initial> {
             ElevatedButton(
               child: const Text('Login'),
               onPressed: () => Navigator.pushNamed(context, '/login'),
+            ),
+            ElevatedButton(
+              child: const Text('Home'),
+              onPressed: () => Navigator.pushNamed(context, '/home'),
             )
           ]),
         ));

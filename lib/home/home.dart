@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:walking_doggy/add_dog/add_dog.dart';
 import 'package:walking_doggy/domain/Dog.dart';
+import 'package:walking_doggy/domain/User.dart';
 import 'package:walking_doggy/login/login.dart';
 
 import 'home_stream_model.dart';
@@ -35,6 +36,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final _userState = Provider.of<UserState>(context);
     return ChangeNotifierProvider<HomeStreamModel>(
       create: (_) => HomeStreamModel()..fetchDogs(),
       child: Scaffold(
@@ -49,19 +51,19 @@ class _HomeState extends State<Home> {
               }
               return GridView.count(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 250,
                   scrollDirection: Axis.vertical,
                   children: dogs
                       .map((dog) => Column(
                             children: [
-                              Image.network(
+                              Expanded(
+                                child: Image.network(
                                   'https://rosevalleywhiteshepherds.net/wp-content/uploads/2020/09/Bolt-Grand-Prairie-1024x1024.jpg',
-                                  height: 50),
+                                ),
+                              ),
                               Text(dog.name,
                                   style: TextStyle(color: Colors.blueAccent)),
-                              Text(dog.walkers.join('\n')),
-                              FloatingActionButton(
+                              //Text(dog.walkers.join('\n')),
+                              ElevatedButton(
                                   onPressed: _upload,
                                   child: Icon(Icons.upload_file_outlined))
                             ],
@@ -73,8 +75,10 @@ class _HomeState extends State<Home> {
           bottomNavigationBar: BottomNavigationBar(
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Login'),
-              BottomNavigationBarItem(icon: Icon(Icons.logout), label: 'Logout'),
-              BottomNavigationBarItem(icon: Icon(Icons.app_registration), label: 'Register')
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.logout), label: 'Logout'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.app_registration), label: 'Register')
             ],
           ),
           floatingActionButton: Row(
