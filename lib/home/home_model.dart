@@ -6,11 +6,14 @@ class HomeModel extends ChangeNotifier {
   List<Dog>? dogs;
 
   void fetchDogs(List<String> dogsIds) async {
-    await FirebaseFirestore.instance
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('dogs')
         .where('uid', whereIn: dogsIds)
-        .snapshots()
-        .listen((snapshot) =>
-            snapshot.docs.map((document) => Dog(document['name'], '')));
+        .get();
+    this.dogs = snapshot.docs.map((document) {
+      final data = document.data() as Map<String, dynamic>;
+      return Dog(data['name'], '');
+    }).toList();
+    notifyListeners();
   }
 }

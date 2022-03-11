@@ -33,6 +33,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final _userState = Provider.of<UserState>(context);
+    print(_userState.getUser().uid);
     return ChangeNotifierProvider<HomeModel>(
       create: (_) => HomeModel()..fetchDogs(_userState.getUser().dogs),
       child: Scaffold(
