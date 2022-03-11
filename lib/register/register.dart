@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:walking_doggy/domain/User.dart' as user_domain;
 import 'package:walking_doggy/parts/padding_text_field.dart';
+import 'package:walking_doggy/register/register_model.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -23,50 +24,55 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     final user_domain.UserState _userState =
         Provider.of<user_domain.UserState>(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          PaddingTextField(hint: 'Name', onChanged: (value) => name = value),
-          PaddingTextField(hint: 'Email', onChanged: (value) => email = value),
-          PaddingTextField(
-              hint: 'Password',
-              onChanged: (value) => password = value,
-              obscureText: true),
-          PaddingTextField(
-              hint: 'Confirm Password',
-              onChanged: (value) => passwordConfirm = value,
-              obscureText: true),
-          ElevatedButton(
-            child: const Text('Register'),
-            onPressed: () async {
-              try {
-                final _result = await _auth.createUserWithEmailAndPassword(
-                    email: email, password: password);
-                final user = _result.user;
-                _userState.setUser(user_domain.User(user!.uid, name, []));
-                Navigator.pushNamed(context, '/home');
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'email-already-in-use') {
-                  print('Email is already used');
-                } else if (e.code == 'invalid-email') {
-                  print('Invalid email format');
-                } else if (e.code == 'weak-password') {
-                  print('Invalid password format');
-                } else if (e.code == 'operation-not-allowed') {
-                  print('Operation not allowed');
-                }
-              }
-            },
-          ),
-          TextButton(
-              child: const Text('Already user? Login',
-                  style: TextStyle(color: Colors.blueAccent)),
-              onPressed: () => Navigator.pushNamed(context, '/login'))
-        ],
+    return ChangeNotifierProvider(
+      create: (_) => RegisterModel(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Register'),
+        ),
+        body: Consumer<RegisterModel>(builder: (context, model, child) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              PaddingTextField(
+                  hint: 'Name', onChanged: (value) => model.setName(value)),
+              PaddingTextField(
+                  hint: 'Email', onChanged: (value) => model.setEmail(value)),
+              PaddingTextField(
+                  hint: 'Password',
+                  onChanged: (value) => model.setPassword(value),
+                  obscureText: true),
+              PaddingTextField(
+                  hint: 'Confirm Password',
+                  onChanged: (value) => model.setConfirmPassword(value),
+                  obscureText: true),
+              ElevatedButton(
+                child: const Text('Register'),
+                onPressed: () async {
+                  model.startLoading();
+                  try {
+                    await model.register();
+                    _userState.setUser(user_domain.User(
+                        model.uid!, model.name!, model.email!, []));
+                    Navigator.pushNamed(context, '/home');
+                  } on FirebaseAuthException catch (e) {
+                    final snackBar = SnackBar(
+                      backgroundColor: Colors.red,
+                      content: Text(e.toString()),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  } finally {
+                    model.endLoading();
+                  }
+                },
+              ),
+              TextButton(
+                  child: const Text('Already user? Login',
+                      style: TextStyle(color: Colors.blueAccent)),
+                  onPressed: () => Navigator.pushNamed(context, '/login'))
+            ],
+          );
+        }),
       ),
     );
   }
