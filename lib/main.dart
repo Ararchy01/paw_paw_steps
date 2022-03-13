@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:walking_doggy/add_dog/add_dog.dart';
 
 import 'domain/User.dart';
 import 'home/home.dart';
@@ -32,6 +33,7 @@ class Main extends StatelessWidget {
             '/register': (context) => const Register(),
             '/login': (context) => const Login(),
             '/home': (context) => const Home(),
+            '/add_dog': (context) => const AddDog()
           }),
     );
   }

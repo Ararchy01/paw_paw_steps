@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:walking_doggy/add_dog/add_dog.dart';
 import 'package:walking_doggy/domain/Dog.dart';
 import 'package:walking_doggy/domain/User.dart';
 import 'package:walking_doggy/home/home_model.dart';
@@ -33,9 +34,8 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final _userState = Provider.of<UserState>(context);
-    print(_userState.getUser().uid);
     return ChangeNotifierProvider<HomeModel>(
-      create: (_) => HomeModel()..fetchDogs(_userState.getUser().dogs),
+      create: (_) => HomeModel()..fetchDogs(_userState.getUser().uid),
       child: Scaffold(
         appBar: AppBar(
           title: const Icon(Icons.pets),
@@ -53,20 +53,50 @@ class _HomeState extends State<Home> {
                     .map((dog) => Column(
                           children: [
                             Expanded(
-                              child: Image.network(
-                                'https://rosevalleywhiteshepherds.net/wp-content/uploads/2020/09/Bolt-Grand-Prairie-1024x1024.jpg',
-                              ),
+                              child: Image.network(dog.imageUrl),
                             ),
                             Text(dog.name,
-                                style: TextStyle(color: Colors.blueAccent)),
+                                style:
+                                    const TextStyle(color: Colors.blueAccent)),
                             ElevatedButton(
-                                onPressed: _upload,
-                                child: Icon(Icons.upload_file_outlined))
+                              onPressed: () async => dog.walkId.isEmpty
+                                  ? model.walkDog(dog.uid)
+                                  : model.endWalk(dog.uid),
+                              child: Text(dog.walkId.isEmpty
+                                  ? 'Start Walk!'
+                                  : 'End Walk'),
+                              style: ElevatedButton.styleFrom(
+                                  primary: dog.walkId.isEmpty
+                                      ? Colors.yellow
+                                      : Colors.redAccent),
+                            )
                           ],
                         ))
                     .toList());
           }),
         ),
+        floatingActionButton:
+            Consumer<HomeModel>(builder: (context, model, child) {
+          return FloatingActionButton(
+            onPressed: () async {
+              final bool? added = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const AddDog(),
+                    fullscreenDialog: true),
+              );
+              if (added != null && added) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  backgroundColor: Colors.green,
+                  content: Text('Added a dog!'),
+                ));
+              }
+
+              model.fetchDogs(_userState.getUser().uid);
+            },
+            child: const Icon(Icons.add),
+          );
+        }),
         //TODO
         bottomNavigationBar: BottomNavigationBar(
           items: const [

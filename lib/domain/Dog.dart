@@ -1,8 +1,8 @@
-import 'User.dart';
-
 class Dog {
+  final String uid;
   final String name;
   final String imageUrl;
+  final String walkId;
 
-  Dog(this.name, this.imageUrl);
+  Dog(this.uid, this.name, this.imageUrl, this.walkId);
 }
