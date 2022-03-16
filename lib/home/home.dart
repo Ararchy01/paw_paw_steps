@@ -138,81 +138,87 @@ class _MultipleView extends StatelessWidget {
     return ListView(
         padding: const EdgeInsets.all(10.0),
         children: dogs
-            .map((dog) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: SizedBox(
-                    height: 100,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: <Widget>[
-                        AspectRatio(
-                          aspectRatio: 1.0,
-                          child: Image.network(dog.imageUrl),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(20.0, 0.0, 2.0, 0.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        dog.name,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const Padding(
-                                          padding:
-                                              EdgeInsets.only(bottom: 2.0)),
-                                      Text(
-                                        dog.uid, // TODO
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 12.0,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: <Widget>[
-                                      Text(
-                                        'sdfsdfs',
-                                        style: const TextStyle(
-                                          fontSize: 12.0,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      Text(
-                                        'aaaaaa',
-                                        style: const TextStyle(
-                                          fontSize: 12.0,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+            .map((dog) => GestureDetector(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => _SingleView(dog, model),
+                          fullscreenDialog: true)),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: SizedBox(
+                      height: 100,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: <Widget>[
+                          AspectRatio(
+                            aspectRatio: 1.0,
+                            child: Image.network(dog.imageUrl),
                           ),
-                        )
-                      ],
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  20.0, 0.0, 2.0, 0.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          dog.name,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const Padding(
+                                            padding:
+                                                EdgeInsets.only(bottom: 2.0)),
+                                        Expanded(
+                                          child: CircleAvatar(
+                                            radius: 40,
+                                            backgroundColor: Colors.yellowAccent,
+                                            backgroundImage:
+                                                NetworkImage(dog.imageUrl), //TODO
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: <Widget>[
+                                        Text(
+                                          'sdfsdfs',
+                                          style: const TextStyle(
+                                            fontSize: 12.0,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                        Text(
+                                          'aaaaaa',
+                                          style: const TextStyle(
+                                            fontSize: 12.0,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ))

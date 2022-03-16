@@ -36,10 +36,6 @@ class _InitialState extends State<Initial> {
                     child: const Text('Login'),
                     onPressed: () => Navigator.pushNamed(context, '/login'),
                   ),
-                  ElevatedButton(
-                    child: const Text('Home'),
-                    onPressed: () => Navigator.pushNamed(context, '/home'),
-                  )
                 ]),
           ),
         ));
