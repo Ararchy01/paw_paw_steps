@@ -38,7 +38,13 @@ class _HomeState extends State<Home> {
       create: (_) => HomeModel()..fetchDogs(_userState.getUser().uid),
       child: Scaffold(
         appBar: AppBar(
-          title: const Icon(Icons.pets),
+          title: Row(
+            children: const [
+              Icon(Icons.pets),
+              Text('Pow Pow Steps'),
+              Icon(Icons.pets),
+            ],
+          ),
         ),
         body: Center(
           child: Consumer<HomeModel>(builder: (context, model, child) {
@@ -46,33 +52,11 @@ class _HomeState extends State<Home> {
             if (dogs == null) {
               return const CircularProgressIndicator();
             }
-            return GridView.count(
-                crossAxisCount: 2,
-                scrollDirection: Axis.vertical,
-                children: dogs
-                    .map((dog) => Column(
-                          children: [
-                            Expanded(
-                              child: Image.network(dog.imageUrl),
-                            ),
-                            Text(dog.name,
-                                style:
-                                    const TextStyle(color: Colors.blueAccent)),
-                            ElevatedButton(
-                              onPressed: () async => dog.walkId.isEmpty
-                                  ? model.walkDog(dog.uid)
-                                  : model.endWalk(dog.uid),
-                              child: Text(dog.walkId.isEmpty
-                                  ? 'Start Walk!'
-                                  : 'End Walk'),
-                              style: ElevatedButton.styleFrom(
-                                  primary: dog.walkId.isEmpty
-                                      ? Colors.yellow
-                                      : Colors.redAccent),
-                            )
-                          ],
-                        ))
-                    .toList());
+            if (dogs.length == 1) {
+              return _SingleView(dogs.first, model);
+            } else {
+              return _MultipleView(dogs, model);
+            }
           }),
         ),
         floatingActionButton:
@@ -91,7 +75,6 @@ class _HomeState extends State<Home> {
                   content: Text('Added a dog!'),
                 ));
               }
-
               model.fetchDogs(_userState.getUser().uid);
             },
             child: const Icon(Icons.add),
@@ -112,17 +95,70 @@ class _HomeState extends State<Home> {
 }
 
 class _SingleView extends StatelessWidget {
+  final Dog dog;
+  final HomeModel model;
+
+  const _SingleView(this.dog, this.model);
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [],
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            dog.name,
+            style: const TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green),
+          ),
+          Expanded(child: Image.network(dog.imageUrl), flex: 0),
+          ElevatedButton(
+            onPressed: () async => dog.walkId.isEmpty
+                ? model.walkDog(dog.uid)
+                : model.endWalk(dog.uid),
+            child: Text(dog.walkId.isEmpty ? 'Start Walk!' : 'End Walk'),
+            style: ElevatedButton.styleFrom(
+                primary: dog.walkId.isEmpty ? Colors.yellow : Colors.redAccent),
+          )
+        ],
+      ),
     );
   }
 }
 
 class _MultipleView extends StatelessWidget {
+  final List<Dog> dogs;
+  final HomeModel model;
+
+  const _MultipleView(this.dogs, this.model);
+
   @override
   Widget build(BuildContext context) {
-    return GridView.count(crossAxisCount: 2);
+    return GridView.count(
+        crossAxisCount: 2,
+        scrollDirection: Axis.vertical,
+        children: dogs
+            .map((dog) => Column(
+                  children: [
+                    Expanded(
+                      child: Image.network(dog.imageUrl),
+                    ),
+                    Text(dog.name,
+                        style: const TextStyle(color: Colors.blueAccent)),
+                    ElevatedButton(
+                      onPressed: () async => dog.walkId.isEmpty
+                          ? model.walkDog(dog.uid)
+                          : model.endWalk(dog.uid),
+                      child:
+                          Text(dog.walkId.isEmpty ? 'Start Walk!' : 'End Walk'),
+                      style: ElevatedButton.styleFrom(
+                          primary: dog.walkId.isEmpty
+                              ? Colors.yellow
+                              : Colors.redAccent),
+                    )
+                  ],
+                ))
+            .toList());
   }
 }

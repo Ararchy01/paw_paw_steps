@@ -6,22 +6,25 @@ class HomeModel extends ChangeNotifier {
   final _userCollection = FirebaseFirestore.instance.collection('users');
   final _dogCollection = FirebaseFirestore.instance.collection('dogs');
   final _walkCollection = FirebaseFirestore.instance.collection('walks');
-  List<Dog>? dogs;
+  List<Dog>? dogs = [];
 
   void fetchDogs(String userId) async {
     List<String> dogsIds = [];
     await _userCollection.doc(userId).get().then(
         (value) => dogsIds = (value['dogs'] as List<dynamic>).cast<String>());
-    await _dogCollection
-        .where('uid', whereIn: dogsIds)
-        .snapshots()
-        .listen((QuerySnapshot snapshot) {
-      this.dogs = snapshot.docs.map((DocumentSnapshot document) {
-        final data = document.data() as Map<String, dynamic>;
-        return Dog(document['uid'], data['name'], data['imageURL'], document['walkId']);
-      }).toList();
-      notifyListeners();
-    });
+    if (dogsIds.isNotEmpty) {
+      await _dogCollection
+          .where('uid', whereIn: dogsIds)
+          .snapshots()
+          .listen((QuerySnapshot snapshot) {
+        this.dogs = snapshot.docs.map((DocumentSnapshot document) {
+          final data = document.data() as Map<String, dynamic>;
+          return Dog(document['uid'], data['name'], data['imageURL'],
+              document['walkId']);
+        }).toList();
+      });
+    }
+    notifyListeners();
   }
 
   void walkDog(String dogId) async {
