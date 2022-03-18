@@ -46,8 +46,13 @@ class AddDogModel extends ChangeNotifier {
     } else {
       imageURL = noImageURL;
     }
-    await doc
-        .set({'uid': doc.id, 'name': name, 'imageURL': imageURL, 'walkId': ''});
+    await doc.set({
+      'uid': doc.id,
+      'name': name,
+      'imageURL': imageURL,
+      'walkingId': '',
+      'walks': []
+    });
     await _usersCollection.doc(userId).update({
       'dogs': FieldValue.arrayUnion([doc.id])
     });

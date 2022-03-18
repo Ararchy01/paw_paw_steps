@@ -53,7 +53,7 @@ class _HomeState extends State<Home> {
               return const CircularProgressIndicator();
             }
             if (dogs.length == 1) {
-              return _SingleView(dogs.first, model);
+              return _SingleView(dogs.first, model, _userState.getUser().uid);
             } else {
               return _MultipleView(dogs, model);
             }
@@ -97,8 +97,9 @@ class _HomeState extends State<Home> {
 class _SingleView extends StatelessWidget {
   final Dog dog;
   final HomeModel model;
+  final String userId;
 
-  const _SingleView(this.dog, this.model);
+  const _SingleView(this.dog, this.model, this.userId);
 
   @override
   Widget build(BuildContext context) {
@@ -114,12 +115,14 @@ class _SingleView extends StatelessWidget {
           ),
           Expanded(child: Image.network(dog.imageUrl), flex: 0),
           ElevatedButton(
-            onPressed: () async => dog.walkId.isEmpty
-                ? model.walkDog(dog.uid)
-                : model.endWalk(dog.uid),
-            child: Text(dog.walkId.isEmpty ? 'Start Walk!' : 'End Walk'),
-            style: ElevatedButton.styleFrom(
-                primary: dog.walkId.isEmpty ? Colors.yellow : Colors.redAccent),
+            onPressed: () async => model.walkDog(dog.uid, userId),
+            child: const Text('Start Walk!'),
+            style: ElevatedButton.styleFrom(primary: Colors.yellow),
+          ),
+          ElevatedButton(
+            onPressed: () async => model.endWalk(dog.uid),
+            child: const Text('End Walk'),
+            style: ElevatedButton.styleFrom(primary: Colors.redAccent),
           )
         ],
       ),
@@ -142,7 +145,8 @@ class _MultipleView extends StatelessWidget {
                   onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => _SingleView(dog, model),
+                          builder: (context) => _SingleView(dog, model, 'sdf'),
+                          //TODO
                           fullscreenDialog: true)),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -182,9 +186,10 @@ class _MultipleView extends StatelessWidget {
                                         Expanded(
                                           child: CircleAvatar(
                                             radius: 40,
-                                            backgroundColor: Colors.yellowAccent,
-                                            backgroundImage:
-                                                NetworkImage(dog.imageUrl), //TODO
+                                            backgroundColor:
+                                                Colors.yellowAccent,
+                                            backgroundImage: NetworkImage(
+                                                dog.imageUrl), //TODO
                                           ),
                                         ),
                                       ],
@@ -197,15 +202,15 @@ class _MultipleView extends StatelessWidget {
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: <Widget>[
                                         Text(
-                                          'sdfsdfs',
-                                          style: const TextStyle(
+                                          'Last walk',
+                                          style: TextStyle(
                                             fontSize: 12.0,
                                             color: Colors.black87,
                                           ),
                                         ),
                                         Text(
-                                          'aaaaaa',
-                                          style: const TextStyle(
+                                          dog.walks.first,
+                                          style: TextStyle(
                                             fontSize: 12.0,
                                             color: Colors.black54,
                                           ),
