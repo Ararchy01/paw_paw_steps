@@ -1,13 +1,10 @@
-import 'dart:io';
-
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:walking_doggy/add_dog/add_dog.dart';
-import 'package:walking_doggy/domain/Dog.dart';
-import 'package:walking_doggy/domain/User.dart';
-import 'package:walking_doggy/home/home_model.dart';
+
+import '../add_dog/add_dog.dart';
+import '../domain/Dog.dart';
+import '../domain/User.dart';
+import 'home_model.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -17,20 +14,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  void _upload() async {
-    final pickerFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    File? file = File(pickerFile!.path); //TODO
-
-    FirebaseStorage storage = FirebaseStorage.instance;
-    try {
-      await storage.ref().putFile(file);
-      print(storage.ref());
-    } catch (e) {
-      print(e);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final _userState = Provider.of<UserState>(context);
@@ -55,7 +38,7 @@ class _HomeState extends State<Home> {
             if (dogs.length == 1) {
               return _SingleView(dogs.first, model, _userState.getUser().uid);
             } else {
-              return _MultipleView(dogs, model);
+              return _MultipleView(dogs, model, _userState.getUser().uid);
             }
           }),
         ),
@@ -101,31 +84,47 @@ class _SingleView extends StatelessWidget {
 
   const _SingleView(this.dog, this.model, this.userId);
 
+  Widget get image {
+    return SizedBox(
+      width: 200,
+      child: Image.network(dog.imageUrl),
+    );
+  }
+
+  Widget get name {
+    return Text(dog.name,
+        style: const TextStyle(
+            fontSize: 30, fontWeight: FontWeight.bold, color: Colors.green));
+  }
+
+  Widget get startWalk {
+    return ElevatedButton(
+        onPressed: () async => model.walkDog(dog.uid, userId),
+        child: const Text('Start Walk!'),
+        style: ElevatedButton.styleFrom(primary: Colors.yellow));
+  }
+
+  Widget get endWalk {
+    return ElevatedButton(
+        onPressed: () async => model.endWalk(dog.uid),
+        child: const Text('End Walk'),
+        style: ElevatedButton.styleFrom(primary: Colors.redAccent));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            dog.name,
-            style: const TextStyle(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green),
-          ),
-          Expanded(child: Image.network(dog.imageUrl), flex: 0),
-          ElevatedButton(
-            onPressed: () async => model.walkDog(dog.uid, userId),
-            child: const Text('Start Walk!'),
-            style: ElevatedButton.styleFrom(primary: Colors.yellow),
-          ),
-          ElevatedButton(
-            onPressed: () async => model.endWalk(dog.uid),
-            child: const Text('End Walk'),
-            style: ElevatedButton.styleFrom(primary: Colors.redAccent),
-          )
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        image,
+        name,
+        dog.walkingId.isEmpty ? startWalk : endWalk,
+        Column(
+          children: dog.recentWalks
+              .map((walk) => Text(walk.endAt.toLocal().toString()))
+              .toList(),
+        )
+      ],
     );
   }
 }
@@ -133,125 +132,86 @@ class _SingleView extends StatelessWidget {
 class _MultipleView extends StatelessWidget {
   final List<Dog> dogs;
   final HomeModel model;
+  final String userId;
 
-  const _MultipleView(this.dogs, this.model);
+  const _MultipleView(this.dogs, this.model, this.userId);
 
   @override
   Widget build(BuildContext context) {
     return ListView(
         padding: const EdgeInsets.all(10.0),
-        children: dogs
-            .map((dog) => GestureDetector(
-                  onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => _SingleView(dog, model, 'sdf'),
-                          //TODO
-                          fullscreenDialog: true)),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: SizedBox(
-                      height: 100,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: <Widget>[
-                          AspectRatio(
-                            aspectRatio: 1.0,
-                            child: Image.network(dog.imageUrl),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  20.0, 0.0, 2.0, 0.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          dog.name,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const Padding(
-                                            padding:
-                                                EdgeInsets.only(bottom: 2.0)),
-                                        Expanded(
-                                          child: CircleAvatar(
-                                            radius: 40,
-                                            backgroundColor:
-                                                Colors.yellowAccent,
-                                            backgroundImage: NetworkImage(
-                                                dog.imageUrl), //TODO
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: <Widget>[
-                                        Text(
-                                          'Last walk',
-                                          style: TextStyle(
-                                            fontSize: 12.0,
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                        Text(
-                                          dog.walks.first,
-                                          style: TextStyle(
-                                            fontSize: 12.0,
-                                            color: Colors.black54,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ))
-            .toList());
+        children: dogs.map((dog) => _DogListItem(dog, model, userId)).toList());
   }
 }
-//GridView.count(
-//         crossAxisCount: 2,
-//         scrollDirection: Axis.vertical,
-//         children: dogs
-//             .map((dog) => Column(
-//                   children: [
-//                     Expanded(
-//                       child: Image.network(dog.imageUrl),
-//                     ),
-//                     Text(dog.name,
-//                         style: const TextStyle(color: Colors.blueAccent)),
-//                     ElevatedButton(
-//                       onPressed: () async => dog.walkId.isEmpty
-//                           ? model.walkDog(dog.uid)
-//                           : model.endWalk(dog.uid),
-//                       child:
-//                           Text(dog.walkId.isEmpty ? 'Start Walk!' : 'End Walk'),
-//                       style: ElevatedButton.styleFrom(
-//                           primary: dog.walkId.isEmpty
-//                               ? Colors.yellow
-//                               : Colors.redAccent),
-//                     )
-//                   ],
-//                 ))
-//             .toList());
+
+class _DogListItem extends StatelessWidget {
+  final Dog dog;
+  final HomeModel model;
+  final String userId;
+
+  const _DogListItem(this.dog, this.model, this.userId);
+
+  Widget get image {
+    return SizedBox(
+      width: 150,
+      height: 150,
+      child: Image.network(dog.imageUrl),
+    );
+  }
+
+  Widget get name {
+    return Text(
+      dog.name,
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget get lastWalked {
+    return const Padding(
+      padding: EdgeInsets.only(top: 8),
+      child: Text('Last Walked: 12:20 March 18, 2022'), //TODO
+    );
+  }
+
+  Widget get startWalk {
+    return ElevatedButton(
+        onPressed: () async => model.walkDog(dog.uid, userId),
+        child: const Text('Start Walk!'),
+        style: ElevatedButton.styleFrom(primary: Colors.yellow));
+  }
+
+  Widget get endWalk {
+    return ElevatedButton(
+        onPressed: () async => model.endWalk(dog.uid),
+        child: const Text('End Walk'),
+        style: ElevatedButton.styleFrom(primary: Colors.redAccent));
+  }
+
+  Widget get details {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, right: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          name,
+          lastWalked,
+          dog.walkingId.isEmpty ? startWalk : endWalk,
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4, top: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          image,
+          Flexible(child: details),
+        ],
+      ),
+    );
+  }
+}
