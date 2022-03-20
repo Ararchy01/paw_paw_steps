@@ -1,10 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../add_dog/add_dog.dart';
 import '../domain/Dog.dart';
 import '../domain/User.dart';
+import '../domain/Walk.dart';
 import 'home_model.dart';
+
+final dogRef = FirebaseFirestore.instance.collection('dogs').withConverter(
+    fromFirestore: (snapshots, _) => Dog.fromJson(snapshots.data()!),
+    toFirestore: (dog, _) => dog.toJson());
+
+final walkRef = FirebaseFirestore.instance.collection('walks').withConverter(
+    fromFirestore: (snapshots, _) => Walk.fromJson(snapshots.data()!),
+    toFirestore: (walk, _) => walk.toJson());
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -14,64 +24,43 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  Widget get appTitle {
+    return Row(
+      children: const [
+        Icon(Icons.pets),
+        Text('Pow Pow Steps'),
+        Icon(Icons.pets),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final _userState = Provider.of<UserState>(context);
-    return ChangeNotifierProvider<HomeModel>(
-      create: (_) => HomeModel()..fetchDogs(_userState.getUser().uid),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: const [
-              Icon(Icons.pets),
-              Text('Pow Pow Steps'),
-              Icon(Icons.pets),
-            ],
-          ),
-        ),
-        body: Center(
-          child: Consumer<HomeModel>(builder: (context, model, child) {
-            final List<Dog>? dogs = model.dogs;
-            if (dogs == null) {
-              return const CircularProgressIndicator();
-            }
-            if (dogs.length == 1) {
-              return _SingleView(dogs.first, model, _userState.getUser().uid);
-            } else {
-              return _MultipleView(dogs, model, _userState.getUser().uid);
-            }
-          }),
-        ),
-        floatingActionButton:
-            Consumer<HomeModel>(builder: (context, model, child) {
-          return FloatingActionButton(
-            onPressed: () async {
-              final bool? added = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const AddDog(),
-                    fullscreenDialog: true),
-              );
-              if (added != null && added) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  backgroundColor: Colors.green,
-                  content: Text('Added a dog!'),
-                ));
-              }
-              model.fetchDogs(_userState.getUser().uid);
+    final _user = Provider.of<UserState>(context).getUser();
+    return Scaffold(
+      appBar: AppBar(title: appTitle),
+      body: StreamBuilder<QuerySnapshot<Dog>>(
+        stream: dogRef.where('walkersIds', arrayContains: _user.uid).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final data = snapshot.requireData;
+          print(data.size);
+          return ListView.builder(
+            itemCount: data.size,
+            itemBuilder: (context, index) {
+              print('hey');
+              return _DogListItem(
+                  data.docs[index].data(), data.docs[index].reference, _user.uid);
             },
-            child: const Icon(Icons.add),
           );
-        }),
-        //TODO
-        bottomNavigationBar: BottomNavigationBar(
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Login'),
-            BottomNavigationBarItem(icon: Icon(Icons.logout), label: 'Logout'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.app_registration), label: 'Register')
-          ],
-        ),
+        },
       ),
     );
   }
@@ -96,20 +85,20 @@ class _SingleView extends StatelessWidget {
         style: const TextStyle(
             fontSize: 30, fontWeight: FontWeight.bold, color: Colors.green));
   }
-
-  Widget get startWalk {
-    return ElevatedButton(
-        onPressed: () async => model.walkDog(dog.uid, userId),
-        child: const Text('Start Walk!'),
-        style: ElevatedButton.styleFrom(primary: Colors.yellow));
-  }
-
-  Widget get endWalk {
-    return ElevatedButton(
-        onPressed: () async => model.endWalk(dog.uid),
-        child: const Text('End Walk'),
-        style: ElevatedButton.styleFrom(primary: Colors.redAccent));
-  }
+  //
+  // Widget get startWalk {
+  //   return ElevatedButton(
+  //       onPressed: () async => model.walkDog(dog.uid, userId),
+  //       child: const Text('Start Walk!'),
+  //       style: ElevatedButton.styleFrom(primary: Colors.yellow));
+  // }
+  //
+  // Widget get endWalk {
+  //   return ElevatedButton(
+  //       onPressed: () async => model.endWalk(dog.uid),
+  //       child: const Text('End Walk'),
+  //       style: ElevatedButton.styleFrom(primary: Colors.redAccent));
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +107,7 @@ class _SingleView extends StatelessWidget {
       children: [
         image,
         name,
-        dog.walkingId.isEmpty ? startWalk : endWalk,
+        // dog.walkingId.isEmpty ? startWalk : endWalk,
         Column(
           children: dog.recentWalks
               .map((walk) => Text(walk.endAt.toLocal().toString()))
@@ -129,27 +118,12 @@ class _SingleView extends StatelessWidget {
   }
 }
 
-class _MultipleView extends StatelessWidget {
-  final List<Dog> dogs;
-  final HomeModel model;
-  final String userId;
-
-  const _MultipleView(this.dogs, this.model, this.userId);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-        padding: const EdgeInsets.all(10.0),
-        children: dogs.map((dog) => _DogListItem(dog, model, userId)).toList());
-  }
-}
-
 class _DogListItem extends StatelessWidget {
   final Dog dog;
-  final HomeModel model;
+  final DocumentReference<Dog> dogReference;
   final String userId;
 
-  const _DogListItem(this.dog, this.model, this.userId);
+  const _DogListItem(this.dog, this.dogReference, this.userId);
 
   Widget get image {
     return SizedBox(
@@ -173,20 +147,6 @@ class _DogListItem extends StatelessWidget {
     );
   }
 
-  Widget get startWalk {
-    return ElevatedButton(
-        onPressed: () async => model.walkDog(dog.uid, userId),
-        child: const Text('Start Walk!'),
-        style: ElevatedButton.styleFrom(primary: Colors.yellow));
-  }
-
-  Widget get endWalk {
-    return ElevatedButton(
-        onPressed: () async => model.endWalk(dog.uid),
-        child: const Text('End Walk'),
-        style: ElevatedButton.styleFrom(primary: Colors.redAccent));
-  }
-
   Widget get details {
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8),
@@ -195,7 +155,7 @@ class _DogListItem extends StatelessWidget {
         children: [
           name,
           lastWalked,
-          dog.walkingId.isEmpty ? startWalk : endWalk,
+          WalkButton(dog: dog, dogReference: dogReference, userId: userId),
         ],
       ),
     );
@@ -213,5 +173,72 @@ class _DogListItem extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class WalkButton extends StatefulWidget {
+  final Dog dog;
+  final DocumentReference<Dog> dogReference;
+  final String userId;
+
+  const WalkButton(
+      {Key? key,
+      required this.dog,
+      required this.dogReference,
+      required this.userId})
+      : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _WalkButtonState();
+}
+
+class _WalkButtonState extends State<WalkButton> {
+  late String _buttonText = '';
+  late Color _buttonColor = Colors.black;
+
+  Future<void> _onWalkPressed() async {
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
+      DocumentSnapshot<Dog> snapshot =
+          await transaction.get<Dog>(widget.dogReference);
+
+      if (!snapshot.exists) {
+        throw Exception('Document does not exist');
+      }
+
+      final String _walkingId = snapshot.data()!.walkingId;
+      final batch = FirebaseFirestore.instance.batch();
+      if (_walkingId.isEmpty) {
+        final _walkDoc = await walkRef.doc();
+        batch.set(
+            _walkDoc,
+            Walk(
+                uid: _walkDoc.id,
+                dogId: widget.dog.uid,
+                userId: widget.userId,
+                startAt: DateTime.now(),
+                endAt: DateTime.fromMillisecondsSinceEpoch(0)));
+        batch.update(widget.dogReference, {
+          'walkingId': _walkDoc.id,
+          'walks': FieldValue.arrayUnion([_walkDoc])
+        });
+        batch.commit();
+        _buttonText = 'End Walk';
+        _buttonColor = Colors.redAccent;
+      } else {
+        final _walkDoc = await walkRef.doc(widget.dog.walkingId);
+        batch.update(_walkDoc, {'endAt': DateTime.now()});
+        batch.update(widget.dogReference, {'walkingId': ''});
+        _buttonText = 'Start Walk';
+        _buttonColor = Colors.yellow;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+        onPressed: _onWalkPressed,
+        child: Text(_buttonText),
+        style: ElevatedButton.styleFrom(primary: _buttonColor));
   }
 }

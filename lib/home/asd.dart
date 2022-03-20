@@ -188,6 +188,7 @@ class _FilmListState extends State<FilmList> {
     for (final movie in movies.docs) {
       batch.update(movie.reference, {'likes': 0});
     }
+
     await batch.commit();
   }
 }
