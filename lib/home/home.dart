@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../add_dog/add_dog.dart';
 import '../domain/Dog.dart';
 import '../domain/User.dart';
 import '../domain/Walk.dart';
@@ -40,7 +39,8 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(title: appTitle),
       body: StreamBuilder<QuerySnapshot<Dog>>(
-        stream: dogRef.where('walkersIds', arrayContains: _user.uid).snapshots(),
+        stream:
+            dogRef.where('walkersIds', arrayContains: _user.uid).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -51,13 +51,11 @@ class _HomeState extends State<Home> {
             return const Center(child: CircularProgressIndicator());
           }
           final data = snapshot.requireData;
-          print(data.size);
           return ListView.builder(
             itemCount: data.size,
             itemBuilder: (context, index) {
-              print('hey');
-              return _DogListItem(
-                  data.docs[index].data(), data.docs[index].reference, _user.uid);
+              return _DogListItem(data.docs[index].data(),
+                  data.docs[index].reference, _user.uid);
             },
           );
         },
@@ -85,6 +83,7 @@ class _SingleView extends StatelessWidget {
         style: const TextStyle(
             fontSize: 30, fontWeight: FontWeight.bold, color: Colors.green));
   }
+
   //
   // Widget get startWalk {
   //   return ElevatedButton(
@@ -193,52 +192,73 @@ class WalkButton extends StatefulWidget {
 }
 
 class _WalkButtonState extends State<WalkButton> {
-  late String _buttonText = '';
-  late Color _buttonColor = Colors.black;
+  Future<void> _onEndWalkPressed() async {
+    final _walkDoc = await walkRef.doc(widget.dog.walkingId);
+    final batch = FirebaseFirestore.instance.batch();
+    batch.update(_walkDoc, {'endAt': DateTime.now()});
+    batch.update(widget.dogReference, {'walkingId': ''});
+    batch.commit();
+  }
 
   Future<void> _onWalkPressed() async {
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      DocumentSnapshot<Dog> snapshot =
-          await transaction.get<Dog>(widget.dogReference);
-
-      if (!snapshot.exists) {
-        throw Exception('Document does not exist');
-      }
-
-      final String _walkingId = snapshot.data()!.walkingId;
-      final batch = FirebaseFirestore.instance.batch();
-      if (_walkingId.isEmpty) {
-        final _walkDoc = await walkRef.doc();
-        batch.set(
-            _walkDoc,
-            Walk(
-                uid: _walkDoc.id,
-                dogId: widget.dog.uid,
-                userId: widget.userId,
-                startAt: DateTime.now(),
-                endAt: DateTime.fromMillisecondsSinceEpoch(0)));
-        batch.update(widget.dogReference, {
-          'walkingId': _walkDoc.id,
-          'walks': FieldValue.arrayUnion([_walkDoc])
-        });
-        batch.commit();
-        _buttonText = 'End Walk';
-        _buttonColor = Colors.redAccent;
-      } else {
-        final _walkDoc = await walkRef.doc(widget.dog.walkingId);
-        batch.update(_walkDoc, {'endAt': DateTime.now()});
-        batch.update(widget.dogReference, {'walkingId': ''});
-        _buttonText = 'Start Walk';
-        _buttonColor = Colors.yellow;
-      }
+    final _walkDoc = await walkRef.doc();
+    final batch = FirebaseFirestore.instance.batch();
+    batch.set(
+        _walkDoc,
+        Walk(
+            uid: _walkDoc.id,
+            dogId: widget.dog.uid,
+            userId: widget.userId,
+            startAt: DateTime.now(),
+            endAt: DateTime.fromMillisecondsSinceEpoch(0)));
+    batch.update(widget.dogReference, {
+      'walkingId': _walkDoc.id,
+      'walks': FieldValue.arrayUnion([_walkDoc])
     });
+    batch.commit();
+  }
+
+  Future<DocumentSnapshot<Walk>> _getWalk() async {
+    return widget.dog.walkingId.isEmpty
+        ? await walkRef.doc().get()
+        : await walkRef.doc(widget.dog.walkingId).get();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-        onPressed: _onWalkPressed,
-        child: Text(_buttonText),
-        style: ElevatedButton.styleFrom(primary: _buttonColor));
+    return FutureBuilder(
+        future: _getWalk(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const CircularProgressIndicator();
+          }
+          if (snapshot.hasError) {
+            return const Text(
+              'Error',
+              style: TextStyle(color: Colors.red),
+            );
+          }
+
+          if (!snapshot.hasData) {
+            return const Text(
+              'No Data',
+              style: TextStyle(color: Colors.red),
+            );
+          }
+
+          if (widget.dog.walkingId.isEmpty) {
+            return ElevatedButton(
+                onPressed: _onWalkPressed,
+                child: const Text('Start Walk',
+                    style: TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(primary: Colors.blueAccent));
+          }
+          return ElevatedButton(
+              onPressed: _onEndWalkPressed,
+              child:
+                  const Text('End Walk', style: TextStyle(color: Colors.black)),
+              style: ElevatedButton.styleFrom(primary: Colors.redAccent));
+          ;
+        });
   }
 }
