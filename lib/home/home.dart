@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../domain/Dog.dart';
@@ -139,23 +140,19 @@ class _DogListItem extends StatelessWidget {
     );
   }
 
-  Widget get lastWalked {
-    return const Padding(
-      padding: EdgeInsets.only(top: 8),
-      child: Text('Last Walked: 12:20 March 18, 2022'), //TODO
-    );
-  }
-
   Widget get details {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, right: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          name,
-          lastWalked,
-          WalkButton(dog: dog, dogReference: dogReference, userId: userId),
-        ],
+    return SizedBox(
+      height: 150,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8, right: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            name,
+            WalkButton(dog: dog, dogReference: dogReference, userId: userId),
+            Flexible(child: WalkHistory(dog: dog))
+          ],
+        ),
       ),
     );
   }
@@ -163,13 +160,10 @@ class _DogListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4, top: 4),
+      padding: const EdgeInsets.all(4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          image,
-          Flexible(child: details),
-        ],
+        children: [image, Flexible(child: details)],
       ),
     );
   }
@@ -261,4 +255,59 @@ class _WalkButtonState extends State<WalkButton> {
           ;
         });
   }
+}
+
+class WalkHistory extends StatefulWidget {
+  final Dog dog;
+
+  const WalkHistory({Key? key, required this.dog}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _WalkHistoryState();
+}
+
+class _WalkHistoryState extends State<WalkHistory> {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot<Walk>>(
+        stream: walkRef
+            .where('dogId', isEqualTo: widget.dog.uid)
+            .orderBy('endAt', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            print(snapshot.error);
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final data = snapshot.requireData;
+          return ListView.builder(
+              itemCount: data.size,
+              itemBuilder: (context, index) {
+                final walk = data.docs[index].data();
+                final duration = walk.endAt.difference(walk.startAt).inMinutes;
+                return Card(
+                  child: ListTile(
+                    title: Text(
+                      DateFormat('yy-MM-dd HH:mm').format(walk.endAt),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.blue),
+                    ),
+                    subtitle: Text('Walked for $duration minutes'),
+                  ),
+                );
+              });
+        });
+  }
+}
+
+class _WalkHistoryItem {
+  bool isExpanded;
+  final Walk walk;
+
+  _WalkHistoryItem({required this.isExpanded, required this.walk});
 }

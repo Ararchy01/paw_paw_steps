@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Walk {
   final String uid;
   final String dogId;
@@ -16,9 +18,9 @@ class Walk {
       : this(
             uid: json['uid']! as String,
             dogId: json['dogId']! as String,
-            userId: json['imageUrl']! as String,
-            startAt: json['startAt']! as DateTime,
-            endAt: json['endAt']! as DateTime);
+            userId: json['userId']! as String,
+            startAt: (json['startAt'] as Timestamp).toDate(),
+            endAt: (json['endAt']! as Timestamp).toDate());
 
   Map<String, Object?> toJson() {
     return {
