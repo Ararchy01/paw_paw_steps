@@ -128,7 +128,6 @@ class _DogListItem extends StatelessWidget {
   Widget get image {
     return SizedBox(
       width: 150,
-      height: 150,
       child: Image.network(dog.imageUrl),
     );
   }
@@ -141,29 +140,30 @@ class _DogListItem extends StatelessWidget {
   }
 
   Widget get details {
-    return SizedBox(
-      height: 150,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 8, right: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            name,
-            WalkButton(dog: dog, dogReference: dogReference, userId: userId),
-            Flexible(child: WalkHistory(dog: dog))
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, right: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          name,
+          WalkButton(dog: dog, dogReference: dogReference, userId: userId),
+        ],
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [image, Flexible(child: details)],
+    return SizedBox(
+      height: 200,
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: Column(children: [
+          Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [image, Flexible(child: details)]),
+          Flexible(child: WalkHistory(dog: dog))
+        ]),
       ),
     );
   }
@@ -293,7 +293,7 @@ class _WalkHistoryState extends State<WalkHistory> {
                 return Card(
                   child: ListTile(
                     title: Text(
-                      DateFormat('yy-MM-dd HH:mm').format(walk.endAt),
+                      DateFormat('yyyy-MM-dd (E) HH:mm').format(walk.endAt),
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.blue),
                     ),
@@ -303,11 +303,4 @@ class _WalkHistoryState extends State<WalkHistory> {
               });
         });
   }
-}
-
-class _WalkHistoryItem {
-  bool isExpanded;
-  final Walk walk;
-
-  _WalkHistoryItem({required this.isExpanded, required this.walk});
 }
