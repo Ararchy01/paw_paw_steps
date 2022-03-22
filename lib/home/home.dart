@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../domain/Dog.dart';
 import '../domain/User.dart';
 import '../domain/Walk.dart';
-import 'home_model.dart';
 
 final dogRef = FirebaseFirestore.instance.collection('dogs').withConverter(
     fromFirestore: (snapshots, _) => Dog.fromJson(snapshots.data()!),
@@ -65,59 +64,6 @@ class _HomeState extends State<Home> {
   }
 }
 
-class _SingleView extends StatelessWidget {
-  final Dog dog;
-  final HomeModel model;
-  final String userId;
-
-  const _SingleView(this.dog, this.model, this.userId);
-
-  Widget get image {
-    return SizedBox(
-      width: 200,
-      child: Image.network(dog.imageUrl),
-    );
-  }
-
-  Widget get name {
-    return Text(dog.name,
-        style: const TextStyle(
-            fontSize: 30, fontWeight: FontWeight.bold, color: Colors.green));
-  }
-
-  //
-  // Widget get startWalk {
-  //   return ElevatedButton(
-  //       onPressed: () async => model.walkDog(dog.uid, userId),
-  //       child: const Text('Start Walk!'),
-  //       style: ElevatedButton.styleFrom(primary: Colors.yellow));
-  // }
-  //
-  // Widget get endWalk {
-  //   return ElevatedButton(
-  //       onPressed: () async => model.endWalk(dog.uid),
-  //       child: const Text('End Walk'),
-  //       style: ElevatedButton.styleFrom(primary: Colors.redAccent));
-  // }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        image,
-        name,
-        // dog.walkingId.isEmpty ? startWalk : endWalk,
-        Column(
-          children: dog.recentWalks
-              .map((walk) => Text(walk.endAt.toLocal().toString()))
-              .toList(),
-        )
-      ],
-    );
-  }
-}
-
 class _DogListItem extends StatelessWidget {
   final Dog dog;
   final DocumentReference<Dog> dogReference;
@@ -127,7 +73,8 @@ class _DogListItem extends StatelessWidget {
 
   Widget get image {
     return SizedBox(
-      width: 150,
+      width: 200,
+      height: 150,
       child: Image.network(dog.imageUrl),
     );
   }
@@ -135,7 +82,7 @@ class _DogListItem extends StatelessWidget {
   Widget get name {
     return Text(
       dog.name,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
     );
   }
 
@@ -154,17 +101,20 @@ class _DogListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      child: Padding(
-        padding: const EdgeInsets.all(4),
-        child: Column(children: [
-          Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [image, Flexible(child: details)]),
-          Flexible(child: WalkHistory(dog: dog))
-        ]),
+    return Card(
+      child: SizedBox(
+        height: 200,
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: Column(children: [
+            Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [image, Flexible(child: details)]),
+            Flexible(child: WalkHistory(dog: dog))
+          ]),
+        ),
       ),
+      color: Colors.amberAccent,
     );
   }
 }
@@ -290,16 +240,32 @@ class _WalkHistoryState extends State<WalkHistory> {
               itemBuilder: (context, index) {
                 final walk = data.docs[index].data();
                 final duration = walk.endAt.difference(walk.startAt).inMinutes;
+
+                String _walkInfo = '';
+                if (walk.endAt.difference(DateTime.now()).inDays == 0) {
+                  if (walk.endAt.day == DateTime.now().day) {
+                    _walkInfo =
+                        'Today ${DateFormat('HH:mm').format(walk.endAt)}';
+                  } else {
+                    _walkInfo =
+                        'Yesterday ${DateFormat('HH:mm').format(walk.endAt)}';
+                  }
+                } else {
+                  _walkInfo = DateFormat('yyyy-MM-dd HH:mm').format(walk.endAt);
+                }
+
                 return Card(
-                  child: ListTile(
-                    title: Text(
-                      DateFormat('yyyy-MM-dd (E) HH:mm').format(walk.endAt),
+                    child: Padding(
+                  padding: EdgeInsets.all(2),
+                  child: Row(children: [
+                    Text(
+                      _walkInfo,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.blue),
+                          fontWeight: FontWeight.bold, color: Colors.green),
                     ),
-                    subtitle: Text('Walked for $duration minutes'),
-                  ),
-                );
+                    Text(' for $duration minutes')
+                  ]),
+                ));
               });
         });
   }
