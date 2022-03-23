@@ -7,6 +7,7 @@ class Walk {
   final DateTime startAt;
   final DateTime endAt;
 
+
   Walk(
       {required this.uid,
       required this.dogId,
