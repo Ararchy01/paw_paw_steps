@@ -10,51 +10,37 @@ import 'walk_history.dart';
 
 final dogRef = FirestoreUtil.DOG_REF;
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class DogsPage extends StatefulWidget {
+  const DogsPage({Key? key}) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
+  State<DogsPage> createState() => _DogsPageState();
 }
 
-class _HomeState extends State<Home> {
-  Widget get appTitle {
-    return Row(
-      children: const [
-        Icon(Icons.pets),
-        Text('Pow Pow Steps'),
-        Icon(Icons.pets),
-      ],
-    );
-  }
-
+class _DogsPageState extends State<DogsPage> {
   @override
   Widget build(BuildContext context) {
     final _user = Provider.of<UserState>(context).getUser();
-    return Scaffold(
-      appBar: AppBar(title: appTitle),
-      body: StreamBuilder<QuerySnapshot<Dog>>(
-        stream:
-            dogRef.where('walkersIds', arrayContains: _user.uid).snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error.toString()),
-            );
-          }
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final data = snapshot.requireData;
-          return ListView.builder(
-            itemCount: data.size,
-            itemBuilder: (context, index) {
-              return _DogListItem(data.docs[index].data(),
-                  data.docs[index].reference, _user.uid);
-            },
+    return StreamBuilder<QuerySnapshot<Dog>>(
+      stream: dogRef.where('walkersIds', arrayContains: _user.uid).snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(snapshot.error.toString()),
           );
-        },
-      ),
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final data = snapshot.requireData;
+        return ListView.builder(
+          itemCount: data.size,
+          itemBuilder: (context, index) {
+            return _DogListItem(
+                data.docs[index].data(), data.docs[index].reference, _user.uid);
+          },
+        );
+      },
     );
   }
 }

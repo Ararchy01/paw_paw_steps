@@ -32,7 +32,7 @@ class _WalkButtonState extends State<WalkButton> {
     batch.commit();
   }
 
-  Future<void> _onWalkPressed() async {
+  Future<void> _onStartWalkPressed() async {
     final _walkDoc = await walkRef.doc();
     final batch = FirebaseFirestore.instance.batch();
     batch.set(
@@ -47,7 +47,7 @@ class _WalkButtonState extends State<WalkButton> {
       'walkingId': _walkDoc.id,
       'walks': FieldValue.arrayUnion([_walkDoc])
     });
-    batch.commit();
+    await batch.commit();
   }
 
   Future<DocumentSnapshot<Walk>> _getWalk() async {
@@ -80,7 +80,7 @@ class _WalkButtonState extends State<WalkButton> {
 
           if (widget.dog.walkingId.isEmpty) {
             return ElevatedButton(
-                onPressed: _onWalkPressed,
+                onPressed: _onStartWalkPressed,
                 child: const Text('Start Walk',
                     style: TextStyle(color: Colors.white)),
                 style: ElevatedButton.styleFrom(primary: Colors.blueAccent));

@@ -54,7 +54,7 @@ class _RegisterState extends State<Register> {
                     await model.register();
                     _userState.setUser(user_domain.User(
                         model.uid!, model.name!, model.email!, []));
-                    Navigator.pushNamed(context, '/home');
+                    Navigator.pushNamed(context, '/after_login');
                   } on FirebaseAuthException catch (e) {
                     final snackBar = SnackBar(
                       backgroundColor: Colors.red,

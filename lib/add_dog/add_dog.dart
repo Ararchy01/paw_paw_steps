@@ -45,7 +45,7 @@ class _AddDogState extends State<AddDog> {
                   model.startLoading();
                   try {
                     await model.addDog(_userState.getUser().uid);
-                    Navigator.pushNamed(context, '/home');
+                    Navigator.pushNamed(context, '/dogs_page');
                   } on FirebaseAuthException catch (e) {
                     final snackBar = SnackBar(
                       backgroundColor: Colors.red,
