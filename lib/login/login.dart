@@ -81,8 +81,11 @@ class _LoginState extends State<Login> {
                           model.startLoading();
                           try {
                             await model.login();
-                            _userState.setUser(user_domain.User(model.uid!,
-                                model.name!, model.email!, model.dogs!));
+                            _userState.setUser(user_domain.User(
+                                uid: model.uid!,
+                                name: model.name!,
+                                email: model.email!,
+                                dogs: []));
                             Navigator.pushNamed(context, '/after_login');
                           } on FirebaseAuthException catch (e) {
                             // TODO

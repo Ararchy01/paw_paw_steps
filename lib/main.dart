@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:walking_doggy/add_dog/add_dog.dart';
+import 'package:walking_doggy/add_dog_page/add_dog_page.dart';
 import 'package:walking_doggy/app_frame/app_frame_after_login.dart';
 
 import 'domain/User.dart';
@@ -32,7 +32,7 @@ class Main extends StatelessWidget {
             '/initial': (context) => const Initial(),
             '/register': (context) => const Register(),
             '/login': (context) => const Login(),
-            '/add_dog': (context) => const AddDog(),
+            '/add_dog_page': (context) => const AddDogPage(),
             '/after_login': (context) => const AppFrameAfterLogin()
           }),
     );

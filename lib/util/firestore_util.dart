@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:walking_doggy/domain/User.dart';
 
 import '../domain/Dog.dart';
 import '../domain/Walk.dart';
@@ -7,6 +8,12 @@ class FirestoreUtil {
   FirestoreUtil._() {
     throw UnsupportedError('This class is not supposed to be instantiated');
   }
+
+  static final USER_REF = FirebaseFirestore.instance
+      .collection('users')
+      .withConverter(
+          fromFirestore: (snapshots, _) => User.fromJson(snapshots.data()!),
+          toFirestore: (user, _) => user.toJson());
 
   static final DOG_REF = FirebaseFirestore.instance
       .collection('dogs')

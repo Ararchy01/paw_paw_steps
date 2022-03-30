@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'Walk.dart';
 
 class Dog {
@@ -6,14 +8,15 @@ class Dog {
   final String imageUrl;
   final String walkingId;
   final List<String> walkersIds;
-  List<Walk> recentWalks = [];
+  final List<DocumentReference<Walk>> walks;
 
   Dog(
       {required this.uid,
       required this.name,
       required this.imageUrl,
       required this.walkingId,
-      required this.walkersIds});
+      required this.walkersIds,
+      required this.walks});
 
   Dog.fromJson(Map<String, Object?> json)
       : this(
@@ -21,7 +24,8 @@ class Dog {
             name: json['name']! as String,
             imageUrl: json['imageUrl']! as String,
             walkingId: json['walkingId']! as String,
-            walkersIds: (json['walkersIds']! as List).cast<String>());
+            walkersIds: (json['walkersIds']! as List).cast<String>(),
+            walks: (json['walks']! as List).cast<DocumentReference<Walk>>());
 
   Map<String, Object?> toJson() {
     return {
@@ -29,11 +33,8 @@ class Dog {
       'name': name,
       'imageUrl': imageUrl,
       'walkingId': walkingId,
-      'walkersIds': walkersIds
+      'walkersIds': walkersIds,
+      'walks': walks
     };
-  }
-
-  void addRecentWalk(Walk walk) {
-    recentWalks.add(walk);
   }
 }

@@ -12,6 +12,7 @@ class AppFrameAfterLogin extends StatefulWidget {
 class _AppFrameAfterLoginState extends State<AppFrameAfterLogin> {
   Widget get appTitle {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: const [
         Icon(Icons.pets),
         Text('Pow Pow Steps'),
@@ -28,7 +29,10 @@ class _AppFrameAfterLoginState extends State<AppFrameAfterLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: appTitle),
+        appBar: AppBar(
+            title: appTitle,
+            automaticallyImplyLeading: false,
+            centerTitle: true),
         body: _bodyOptions.elementAt(_selected),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
