@@ -20,11 +20,10 @@ class DogsPage extends StatefulWidget {
 class _DogsPageState extends State<DogsPage> {
   @override
   Widget build(BuildContext context) {
-    final _user = Provider.of<UserState>(context).getUser();
+    final _userId = Provider.of<UserState>(context).getUser().uid;
     return Scaffold(
       body: StreamBuilder<QuerySnapshot<Dog>>(
-        stream:
-            dogRef.where('walkersIds', arrayContains: _user.uid).snapshots(),
+        stream: dogRef.where('walkersIds', arrayContains: _userId).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -38,8 +37,8 @@ class _DogsPageState extends State<DogsPage> {
           return ListView.builder(
             itemCount: data.size,
             itemBuilder: (context, index) {
-              return DogListItem(data.docs[index].data(),
-                  data.docs[index].reference, _user.uid);
+              return DogListItem(
+                  data.docs[index].data(), data.docs[index].reference, _userId);
             },
           );
         },
