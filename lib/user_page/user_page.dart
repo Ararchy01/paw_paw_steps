@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../domain/User.dart';
+import '../util/firestore_util.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({Key? key}) : super(key: key);
@@ -11,10 +16,77 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
+  File? _newImageFile;
+  final _userRef = FirestoreUtil.USER_REF;
+
+  Future<void> _pickImage() async {
+    final _pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (_pickedImage != null) {
+      setState(() {
+        _newImageFile = File(_pickedImage.path);
+      });
+    }
+  }
+
+  Widget image(String imageUrl) {
+    return SizedBox(
+      height: 200,
+      width: 200,
+      child: _newImageFile != null
+          ? CircleAvatar(backgroundImage: AssetImage(_newImageFile!.path))
+          : imageUrl.isNotEmpty
+              ? CircleAvatar(backgroundImage: NetworkImage(imageUrl))
+              : const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.add_a_photo_outlined, size: 50)),
+    );
+  }
+
+  Widget imageButton(String userId) {
+    return TextButton(
+        onPressed: () async => await _pickImage(),
+        child: const Text('Set Image',
+            style: TextStyle(color: Colors.blueAccent)));
+  }
+
+  Widget save(UserState userState) {
+    final _user = userState.getUser();
+    return ElevatedButton(
+        onPressed: () async {
+          if (_newImageFile != null) {
+            final task = await FirebaseStorage.instance
+                .ref('dogs/{$_user.uid}')
+                .putFile(_newImageFile!);
+            final _imageUrl = await task.ref.getDownloadURL();
+            await _userRef.doc(_user.uid).update({'imageUrl': _imageUrl});
+            // TODO
+            userState.setUser(User(
+                uid: _user.uid,
+                name: _user.name,
+                email: _user.email,
+                imageUrl: _imageUrl,
+                dogs: _user.dogs));
+          }
+        },
+        child: Text('Save Changes'));
+  }
 
   @override
   Widget build(BuildContext context) {
     final _user = Provider.of<UserState>(context).getUser();
-    return Center(child: Text('User Page'));
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          image(_user.imageUrl),
+          imageButton(_user.uid),
+          Text(_user.name,
+              style: const TextStyle(color: Colors.green, fontSize: 30)),
+          // Text(_user.dogs.join(',')),
+          save(Provider.of<UserState>(context))
+        ],
+      ),
+    );
   }
 }
