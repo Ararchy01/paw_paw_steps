@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../domain/Dog.dart';
 import '../domain/User.dart';
 import '../util/firestore_util.dart';
 
@@ -18,6 +20,7 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   File? _newImageFile;
   final _userRef = FirestoreUtil.USER_REF;
+  final _dogRef = FirestoreUtil.DOG_REF;
 
   Future<void> _pickImage() async {
     final _pickedImage =
@@ -48,6 +51,31 @@ class _UserPageState extends State<UserPage> {
         onPressed: () async => await _pickImage(),
         child: const Text('Set Image',
             style: TextStyle(color: Colors.blueAccent)));
+  }
+
+  Widget dogs(List<String> dogs) {
+    return StreamBuilder<QuerySnapshot<Dog>>(
+        stream: _dogRef.where('uid', whereIn: dogs).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final data = snapshot.requireData;
+
+          data.docs[1].data();
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: data.docs
+                .map((e) => CircleAvatar(
+                    backgroundImage: NetworkImage(e.data().imageUrl)))
+                .toList(),
+          );
+        });
   }
 
   Widget save(UserState userState) {
@@ -83,7 +111,7 @@ class _UserPageState extends State<UserPage> {
           imageButton(_user.uid),
           Text(_user.name,
               style: const TextStyle(color: Colors.green, fontSize: 30)),
-          // Text(_user.dogs.join(',')),
+          dogs(_user.dogs),
           save(Provider.of<UserState>(context))
         ],
       ),

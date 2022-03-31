@@ -45,16 +45,15 @@ class _AddDogPageState extends State<AddDogPage> {
           .putFile(_imageFile!);
       imageURL = await task.ref.getDownloadURL();
     }
+    final _newDog = Dog(
+        uid: doc.id,
+        name: _nameController.value.text,
+        imageUrl: imageURL!,
+        walkingId: '',
+        walkersIds: [userId],
+        walks: []);
     final batch = await FirebaseFirestore.instance.batch();
-    batch.set(
-        doc,
-        Dog(
-            uid: doc.id,
-            name: _nameController.value.text,
-            imageUrl: imageURL!,
-            walkingId: '',
-            walkersIds: [userId],
-            walks: []));
+    batch.set(doc, _newDog);
     batch.update(userRef.doc(userId), {
       'dogs': FieldValue.arrayUnion([doc.id])
     });
@@ -68,7 +67,8 @@ class _AddDogPageState extends State<AddDogPage> {
       width: 200,
       child: _imageFile != null
           ? CircleAvatar(backgroundImage: AssetImage(_imageFile!.path))
-          : const CircleAvatar(backgroundColor: Colors.white,
+          : const CircleAvatar(
+              backgroundColor: Colors.white,
               child: Icon(Icons.add_a_photo_outlined, size: 50)),
     );
   }
