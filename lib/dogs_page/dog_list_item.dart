@@ -16,7 +16,7 @@ class DogListItem extends StatelessWidget {
     return SizedBox(
       width: 100,
       height: 100,
-      child: Image.network(dog.imageUrl),
+      child: CircleAvatar(backgroundImage: NetworkImage(dog.imageUrl)),
     );
   }
 
@@ -55,7 +55,7 @@ class DogListItem extends StatelessWidget {
           ]),
         ),
       ),
-      color: Colors.amberAccent,
+      color: Colors.amber.shade50,
     );
   }
 }

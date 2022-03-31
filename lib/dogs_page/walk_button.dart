@@ -83,7 +83,7 @@ class _WalkButtonState extends State<WalkButton> {
                 onPressed: _onStartWalkPressed,
                 child: const Text('Start Walk',
                     style: TextStyle(color: Colors.white)),
-                style: ElevatedButton.styleFrom(primary: Colors.blueAccent));
+                style: ElevatedButton.styleFrom(primary: Colors.green));
           }
           return ElevatedButton(
               onPressed: _onEndWalkPressed,
