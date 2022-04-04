@@ -67,7 +67,6 @@ class _UserPageState extends State<UserPage> {
           }
           final data = snapshot.requireData;
 
-          data.docs[1].data();
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: data.docs

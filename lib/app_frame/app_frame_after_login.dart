@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:walking_doggy/dogs_page/dogs_page.dart';
+import 'package:walking_doggy/friends_page/friends_page.dart';
 import 'package:walking_doggy/user_page/user_page.dart';
 
 class AppFrameAfterLogin extends StatefulWidget {
@@ -22,7 +23,11 @@ class _AppFrameAfterLoginState extends State<AppFrameAfterLogin> {
   }
 
   int _selected = 0;
-  static const List<Widget> _bodyOptions = <Widget>[DogsPage(), UserPage()];
+  static const List<Widget> _bodyOptions = <Widget>[
+    DogsPage(),
+    FriendsPage(),
+    UserPage()
+  ];
 
   void _onItemTapped(int index) => setState(() => _selected = index);
 
@@ -39,6 +44,10 @@ class _AppFrameAfterLoginState extends State<AppFrameAfterLogin> {
             BottomNavigationBarItem(
               icon: Icon(Icons.pets),
               label: 'Dogs',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              label: 'Search',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.verified_user),
