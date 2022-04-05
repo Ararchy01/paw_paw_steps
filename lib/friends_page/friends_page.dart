@@ -56,7 +56,9 @@ class _FriendsPageState extends State<FriendsPage> {
           ? _friendUser!.imageUrl.isNotEmpty
               ? CircleAvatar(
                   backgroundImage: NetworkImage(_friendUser!.imageUrl))
-              : SizedBox()
+              : const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.image, size: 50))
           : SizedBox(),
     );
   }
@@ -96,9 +98,9 @@ class _FriendsPageState extends State<FriendsPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          image,
           emailTextBox,
           searchButton,
-          image,
           dogs(_user.dogs),
         ],
       ),
@@ -133,6 +135,9 @@ class _DogList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isFriendSelected = friend != null;
+    final bool isDogShared =
+        friend != null ? friend!.dogs.contains(dog.uid) : false;
     return Card(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -140,8 +145,14 @@ class _DogList extends StatelessWidget {
           CircleAvatar(backgroundImage: NetworkImage(dog.imageUrl)),
           Text(dog.name),
           ElevatedButton(
-            onPressed: friend != null ? () => _onShareWalkPressed() : null,
-            child: Text('Share Walk'),
+            onPressed: isFriendSelected && !isDogShared
+                ? () => _onShareWalkPressed()
+                : null,
+            child: isFriendSelected
+                ? isDogShared
+                    ? Text('Already Shared')
+                    : Text('Share Walk')
+                : Icon(Icons.not_interested),
           )
         ],
       ),
