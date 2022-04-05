@@ -50,7 +50,7 @@ class _AppFrameAfterLoginState extends State<AppFrameAfterLogin> {
               label: 'Search',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.verified_user),
+              icon: Icon(Icons.person),
               label: 'User',
             ),
           ],

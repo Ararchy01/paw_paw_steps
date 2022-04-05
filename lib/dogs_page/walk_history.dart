@@ -56,17 +56,18 @@ class _WalkHistoryState extends State<WalkHistory> {
                 }
 
                 return Card(
+                    color: Colors.white70.withAlpha(200),
                     child: Padding(
-                  padding: const EdgeInsets.all(2),
-                  child: Row(children: [
-                    Text(
-                      _walkInfo,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.green),
-                    ),
-                    Text(' for $duration minutes')
-                  ]),
-                ));
+                      padding: const EdgeInsets.all(2),
+                      child: Row(children: [
+                        Text(
+                          _walkInfo,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.green),
+                        ),
+                        Text(' for $duration minutes')
+                      ]),
+                    ));
               });
         });
   }

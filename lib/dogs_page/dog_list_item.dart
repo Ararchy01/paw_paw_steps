@@ -55,7 +55,6 @@ class DogListItem extends StatelessWidget {
           ]),
         ),
       ),
-      color: Colors.amber.shade50,
     );
   }
 }
