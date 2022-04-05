@@ -29,7 +29,7 @@ class _WalkButtonState extends State<WalkButton> {
     final batch = FirebaseFirestore.instance.batch();
     batch.update(_walkDoc, {'endAt': DateTime.now()});
     batch.update(widget.dogReference, {'walkingId': ''});
-    batch.commit();
+    await batch.commit();
   }
 
   Future<void> _onStartWalkPressed() async {

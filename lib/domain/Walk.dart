@@ -18,7 +18,7 @@ class Walk {
       : this(
             uid: json['uid']! as String,
             dogId: json['dogId']! as String,
-            walkersIds: (json['walkersIds']! as List<dynamic>).cast<String>(),
+            walkersIds: (json['walkersIds'] as List<dynamic>).cast<String>(),
             startAt: (json['startAt'] as Timestamp).toDate(),
             endAt: (json['endAt']! as Timestamp).toDate());
 
