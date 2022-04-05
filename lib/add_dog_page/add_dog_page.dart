@@ -50,8 +50,7 @@ class _AddDogPageState extends State<AddDogPage> {
         name: _nameController.value.text,
         imageUrl: imageURL!,
         walkingId: '',
-        walkersIds: [userId],
-        walks: []);
+        walkersIds: [userId]);
     final batch = await FirebaseFirestore.instance.batch();
     batch.set(doc, _newDog);
     batch.update(userRef.doc(userId), {

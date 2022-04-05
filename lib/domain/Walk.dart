@@ -3,15 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Walk {
   final String uid;
   final String dogId;
-  final String userId;
+  final List<String> walkersIds;
   final DateTime startAt;
   final DateTime endAt;
-
 
   Walk(
       {required this.uid,
       required this.dogId,
-      required this.userId,
+      required this.walkersIds,
       required this.startAt,
       required this.endAt});
 
@@ -19,7 +18,7 @@ class Walk {
       : this(
             uid: json['uid']! as String,
             dogId: json['dogId']! as String,
-            userId: json['userId']! as String,
+            walkersIds: (json['walkersIds']! as List<dynamic>).cast<String>(),
             startAt: (json['startAt'] as Timestamp).toDate(),
             endAt: (json['endAt']! as Timestamp).toDate());
 
@@ -27,7 +26,7 @@ class Walk {
     return {
       'uid': uid,
       'dogId': dogId,
-      'userId': userId,
+      'walkersIds': walkersIds,
       'startAt': startAt,
       'endAt': endAt
     };

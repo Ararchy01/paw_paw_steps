@@ -63,9 +63,12 @@ class _FriendsPageState extends State<FriendsPage> {
     );
   }
 
-  Widget dogs(List<String> dogs) {
+  Widget dogs(User user) {
     return StreamBuilder<QuerySnapshot<Dog>>(
-        stream: _dogRef.where('uid', whereIn: dogs).snapshots(),
+        stream: _dogRef
+            .where('uid', whereIn: user.dogs)
+            .where('ownerId', isEqualTo: user.uid)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -76,6 +79,14 @@ class _FriendsPageState extends State<FriendsPage> {
             return const Center(child: CircularProgressIndicator());
           }
           final data = snapshot.requireData;
+
+          if (data.size == 0) {
+            return const Center(
+                child: Text(
+              'No dog to share walks',
+              style: TextStyle(color: Colors.redAccent),
+            ));
+          }
 
           return ListView.builder(
               scrollDirection: Axis.vertical,
@@ -101,7 +112,7 @@ class _FriendsPageState extends State<FriendsPage> {
           image,
           emailTextBox,
           searchButton,
-          dogs(_user.dogs),
+          dogs(_user),
         ],
       ),
     );
@@ -130,7 +141,8 @@ class _DogList extends StatelessWidget {
     batch.update(dogRef, {
       'walkersIds': FieldValue.arrayUnion([friend!.uid])
     });
-    batch.commit();
+    await batch.commit();
+    dog.walkersIds.add(friend!.uid);
   }
 
   @override

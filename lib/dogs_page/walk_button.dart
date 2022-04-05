@@ -14,9 +14,9 @@ class WalkButton extends StatefulWidget {
 
   const WalkButton(
       {Key? key,
-        required this.dog,
-        required this.dogReference,
-        required this.userId})
+      required this.dog,
+      required this.dogReference,
+      required this.userId})
       : super(key: key);
 
   @override
@@ -40,13 +40,10 @@ class _WalkButtonState extends State<WalkButton> {
         Walk(
             uid: _walkDoc.id,
             dogId: widget.dog.uid,
-            userId: widget.userId,
+            walkersIds: [widget.userId],
             startAt: DateTime.now(),
             endAt: DateTime.fromMillisecondsSinceEpoch(0)));
-    batch.update(widget.dogReference, {
-      'walkingId': _walkDoc.id,
-      'walks': FieldValue.arrayUnion([_walkDoc])
-    });
+    batch.update(widget.dogReference, {'walkingId': _walkDoc.id});
     await batch.commit();
   }
 
@@ -85,10 +82,11 @@ class _WalkButtonState extends State<WalkButton> {
                     style: TextStyle(color: Colors.white)),
                 style: ElevatedButton.styleFrom(primary: Colors.green));
           }
+
           return ElevatedButton(
               onPressed: _onEndWalkPressed,
               child:
-              const Text('End Walk', style: TextStyle(color: Colors.black)),
+                  const Text('End Walk', style: TextStyle(color: Colors.black)),
               style: ElevatedButton.styleFrom(primary: Colors.redAccent));
           ;
         });

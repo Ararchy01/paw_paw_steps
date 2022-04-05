@@ -8,15 +8,13 @@ class Dog {
   final String imageUrl;
   final String walkingId;
   final List<String> walkersIds;
-  final List<DocumentReference<Walk>> walks;
 
   Dog(
       {required this.uid,
       required this.name,
       required this.imageUrl,
       required this.walkingId,
-      required this.walkersIds,
-      required this.walks});
+      required this.walkersIds});
 
   Dog.fromJson(Map<String, Object?> json)
       : this(
@@ -24,8 +22,7 @@ class Dog {
             name: json['name']! as String,
             imageUrl: json['imageUrl']! as String,
             walkingId: json['walkingId']! as String,
-            walkersIds: (json['walkersIds']! as List).cast<String>(),
-            walks: (json['walks']! as List).cast<DocumentReference<Walk>>());
+            walkersIds: (json['walkersIds']! as List).cast<String>());
 
   Map<String, Object?> toJson() {
     return {
@@ -33,8 +30,7 @@ class Dog {
       'name': name,
       'imageUrl': imageUrl,
       'walkingId': walkingId,
-      'walkersIds': walkersIds,
-      'walks': walks
+      'walkersIds': walkersIds
     };
   }
 }
