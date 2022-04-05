@@ -54,20 +54,13 @@ class _WalkButtonState extends State<WalkButton> {
     });
   }
 
-  Future<DocumentSnapshot<Walk>> _getWalk() async {
-    return widget.dog.walkingId.isEmpty
-        ? await walkRef.doc().get()
-        : await walkRef.doc(widget.dog.walkingId).get();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<DocumentSnapshot<Walk>>(
-        future: _getWalk(),
+    return StreamBuilder<DocumentSnapshot<Walk>>(
+        stream: widget.dog.walkingId.isEmpty
+            ? walkRef.doc().snapshots()
+            : walkRef.doc(widget.dog.walkingId).snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const CircularProgressIndicator();
-          }
           if (snapshot.hasError) {
             return const Text(
               'Error',
