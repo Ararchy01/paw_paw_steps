@@ -20,7 +20,108 @@ class WalkHistory extends StatefulWidget {
 }
 
 class _WalkHistoryState extends State<WalkHistory> {
-  Widget _walkersIcons(List<String> walkersIds) {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot<Walk>>(
+        stream: walkRef
+            .where('dogId', isEqualTo: widget.dog.uid)
+            .orderBy('endAt', descending: true)
+            .limit(5)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final data = snapshot.requireData;
+          return ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: data.size,
+              itemBuilder: (context, index) {
+                return _Item(walk: data.docs[index].data());
+              });
+        });
+  }
+}
+
+class _Item extends StatelessWidget {
+  final Walk walk;
+
+  const _Item({Key? key, required this.walk}) : super(key: key);
+
+  Widget get _walkTimeText {
+    String _walkInfo;
+    Color _color;
+    if (walk.endAt.isAtSameMomentAs(walk.startAt)) {
+      _walkInfo = 'Walking now';
+      _color = Colors.blue;
+    } else {
+      if (walk.endAt.difference(DateTime.now()).inDays == 0) {
+        if (walk.endAt.day == DateTime.now().day) {
+          _walkInfo = 'Today ${DateFormat('HH:mm').format(walk.endAt)}';
+          _color = Colors.green;
+        } else {
+          _walkInfo = 'Yesterday ${DateFormat('HH:mm').format(walk.endAt)}';
+          _color = Colors.deepPurple;
+        }
+      } else {
+        _color = Colors.black;
+        if (walk.endAt.year != DateTime.now().year) {
+          _walkInfo = DateFormat('yyyy-MM-dd HH:mm').format(walk.endAt);
+        } else {
+          _walkInfo = DateFormat('MM-dd HH:mm').format(walk.endAt);
+        }
+      }
+    }
+
+    return Text(
+      _walkInfo,
+      style: TextStyle(fontWeight: FontWeight.bold, color: _color),
+    );
+  }
+
+  Widget get _durationText {
+    if (walk.endAt.isAtSameMomentAs(walk.startAt)) {
+      return const Text('');
+    }
+    return Text(
+        ' for ${walk.endAt.difference(walk.startAt).inMinutes} minutes');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        color: Colors.white70.withAlpha(200),
+        child: Padding(
+          padding: const EdgeInsets.all(2),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Row(
+              children: [
+                _walkTimeText,
+                _durationText
+              ],
+            ),
+            _WalkersIcons(
+              walkersIds: walk.walkersIds,
+            )
+          ]),
+        ));
+  }
+}
+
+class _WalkersIcons extends StatelessWidget {
+  final List<String> walkersIds;
+
+  const _WalkersIcons({Key? key, required this.walkersIds}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot<User>>(
         stream: userRef.where('uid', whereIn: walkersIds).snapshots(),
         builder: (context, snapshot) {
@@ -50,70 +151,6 @@ class _WalkHistoryState extends State<WalkHistory> {
               );
             }).toList(),
           );
-        });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot<Walk>>(
-        stream: walkRef
-            .where('dogId', isEqualTo: widget.dog.uid)
-            .orderBy('endAt', descending: true)
-            .limit(5)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error.toString()),
-            );
-          }
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final data = snapshot.requireData;
-          return ListView.builder(
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: data.size,
-              itemBuilder: (context, index) {
-                final walk = data.docs[index].data();
-                final duration = walk.endAt.difference(walk.startAt).inMinutes;
-
-                String _walkInfo = '';
-                if (walk.endAt.difference(DateTime.now()).inDays == 0) {
-                  if (walk.endAt.day == DateTime.now().day) {
-                    _walkInfo =
-                        'Today ${DateFormat('HH:mm').format(walk.endAt)}';
-                  } else {
-                    _walkInfo =
-                        'Yesterday ${DateFormat('HH:mm').format(walk.endAt)}';
-                  }
-                } else {
-                  _walkInfo = DateFormat('yyyy-MM-dd HH:mm').format(walk.endAt);
-                }
-
-                return Card(
-                    color: Colors.white70.withAlpha(200),
-                    child: Padding(
-                      padding: const EdgeInsets.all(2),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  _walkInfo,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.green),
-                                ),
-                                Text(' for $duration minutes')
-                              ],
-                            ),
-                            _walkersIcons(walk.walkersIds)
-                          ]),
-                    ));
-              });
         });
   }
 }

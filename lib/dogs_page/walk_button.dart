@@ -25,14 +25,6 @@ class WalkButton extends StatefulWidget {
 }
 
 class _WalkButtonState extends State<WalkButton> {
-  Future<void> _onEndWalkPressed() async {
-    final _walkDoc = await walkRef.doc(widget.dog.walkingId);
-    final batch = FirebaseFirestore.instance.batch();
-    batch.update(_walkDoc, {'endAt': DateTime.now()});
-    batch.update(widget.dogReference, {'walkingId': ''});
-    await batch.commit();
-  }
-
   Future<void> _onStartWalkPressed() async {
     final _walkDoc = await walkRef.doc();
     final batch = FirebaseFirestore.instance.batch();
@@ -43,7 +35,7 @@ class _WalkButtonState extends State<WalkButton> {
             dogId: widget.dog.uid,
             walkersIds: [widget.userId],
             startAt: DateTime.now(),
-            endAt: DateTime.fromMillisecondsSinceEpoch(0)));
+            endAt: DateTime.now()));
     batch.update(widget.dogReference, {'walkingId': _walkDoc.id});
     await batch.commit();
   }
@@ -52,6 +44,14 @@ class _WalkButtonState extends State<WalkButton> {
     await walkRef.doc(widget.dog.walkingId).update({
       'walkersIds': FieldValue.arrayUnion([widget.userId])
     });
+  }
+
+  Future<void> _onEndWalkPressed() async {
+    final _walkDoc = await walkRef.doc(widget.dog.walkingId);
+    final batch = FirebaseFirestore.instance.batch();
+    batch.update(_walkDoc, {'endAt': DateTime.now()});
+    batch.update(widget.dogReference, {'walkingId': ''});
+    await batch.commit();
   }
 
   @override
@@ -84,7 +84,13 @@ class _WalkButtonState extends State<WalkButton> {
           }
 
           final walk = snapshot.data!.data();
-          if (walk!.walkersIds.contains(widget.userId)) {
+          if (walk == null) {
+            return const Text(
+              'No Data',
+              style: TextStyle(color: Colors.red),
+            );
+          }
+          if (walk.walkersIds.contains(widget.userId)) {
             return ElevatedButton(
                 onPressed: _onEndWalkPressed,
                 child: const Text('End Walk',
