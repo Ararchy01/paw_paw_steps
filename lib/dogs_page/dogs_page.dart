@@ -35,6 +35,8 @@ class _DogsPageState extends State<DogsPage> {
           }
           final data = snapshot.requireData;
           return ListView.builder(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
             itemCount: data.size,
             itemBuilder: (context, index) {
               return DogListItem(

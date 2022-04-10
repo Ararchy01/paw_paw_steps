@@ -37,14 +37,17 @@ class _WalkHistoryState extends State<WalkHistory> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: data.docs.map((e) {
               final user = e.data();
-              return SizedBox(
-                  height: 25,
-                  child: user.imageUrl.isNotEmpty
-                      ? CircleAvatar(
-                          backgroundImage: NetworkImage(user.imageUrl))
-                      : CircleAvatar(
-                          backgroundColor: Colors.green,
-                          child: Text(user.name.substring(0, 1))));
+              return Padding(
+                padding: const EdgeInsets.all(2),
+                child: SizedBox(
+                    height: 25,
+                    child: user.imageUrl.isNotEmpty
+                        ? CircleAvatar(
+                            backgroundImage: NetworkImage(user.imageUrl))
+                        : CircleAvatar(
+                            backgroundColor: Colors.green,
+                            child: Text(user.name.substring(0, 1)))),
+              );
             }).toList(),
           );
         });
