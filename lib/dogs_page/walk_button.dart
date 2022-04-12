@@ -27,6 +27,7 @@ class WalkButton extends StatefulWidget {
 class _WalkButtonState extends State<WalkButton> {
   Future<void> _onStartWalkPressed() async {
     final _walkDoc = await walkRef.doc();
+    final _now = DateTime.now();
     final batch = FirebaseFirestore.instance.batch();
     batch.set(
         _walkDoc,
@@ -34,8 +35,8 @@ class _WalkButtonState extends State<WalkButton> {
             uid: _walkDoc.id,
             dogId: widget.dog.uid,
             walkersIds: [widget.userId],
-            startAt: DateTime.now(),
-            endAt: DateTime.now()));
+            startAt: _now,
+            endAt: _now));
     batch.update(widget.dogReference, {'walkingId': _walkDoc.id});
     await batch.commit();
   }

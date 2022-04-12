@@ -89,8 +89,23 @@ class _Item extends StatelessWidget {
     if (walk.endAt.isAtSameMomentAs(walk.startAt)) {
       return const Text('');
     }
-    return Text(
-        ' for ${walk.endAt.difference(walk.startAt).inMinutes} minutes');
+    final _duration = walk.endAt.difference(walk.startAt);
+    String _hours = '';
+    String _minutes = '';
+    final int _minute = _duration.inMinutes % 60;
+    if (_minute == 0 || _minute == 1) {
+      _minutes = '$_minute minute';
+    } else {
+      _minutes = '$_minute minutes';
+    }
+    if (_duration.inMinutes > 59) {
+      if (_duration.inHours == 1) {
+        _hours = '${_duration.inHours} hour ';
+      } else {
+        _hours = '${_duration.inHours} hours ';
+      }
+    }
+    return Text(' for $_hours$_minutes');
   }
 
   @override
@@ -102,10 +117,7 @@ class _Item extends StatelessWidget {
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Row(
-              children: [
-                _walkTimeText,
-                _durationText
-              ],
+              children: [_walkTimeText, _durationText],
             ),
             _WalkersIcons(
               walkersIds: walk.walkersIds,
