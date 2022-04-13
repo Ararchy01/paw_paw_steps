@@ -1,16 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:walking_doggy/util/my_page.dart';
 
 import '../domain/Dog.dart';
 import '../domain/User.dart';
 import '../util/firestore_util.dart';
 
-class FriendsPage extends StatefulWidget {
+class FriendsPage extends StatefulWidget implements MyPage {
   const FriendsPage({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _FriendsPageState();
+
+  @override
+  AppBar appBar() {
+    return AppBar(
+      title: Text('Share Walk'),
+      automaticallyImplyLeading: false,
+    );
+  }
+
+  @override
+  BottomNavigationBarItem bottomNavigationBarItem() {
+    return BottomNavigationBarItem(icon: Icon(Icons.share), label: 'Share');
+  }
 }
 
 class _FriendsPageState extends State<FriendsPage> {

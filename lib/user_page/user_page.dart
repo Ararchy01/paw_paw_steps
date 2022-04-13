@@ -9,12 +9,26 @@ import 'package:provider/provider.dart';
 import '../domain/Dog.dart';
 import '../domain/User.dart';
 import '../util/firestore_util.dart';
+import '../util/my_page.dart';
 
-class UserPage extends StatefulWidget {
+class UserPage extends StatefulWidget implements MyPage {
   const UserPage({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _UserPageState();
+
+  @override
+  AppBar appBar() {
+    return AppBar(
+      title: Text('User'),
+      automaticallyImplyLeading: false,
+    );
+  }
+
+  @override
+  BottomNavigationBarItem bottomNavigationBarItem() {
+    return BottomNavigationBarItem(icon: Icon(Icons.person), label: 'User');
+  }
 }
 
 class _UserPageState extends State<UserPage> {

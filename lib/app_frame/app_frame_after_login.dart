@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:walking_doggy/dogs_page/dogs_page.dart';
-import 'package:walking_doggy/friends_page/friends_page.dart';
-import 'package:walking_doggy/user_page/user_page.dart';
+import 'package:walking_doggy/util/my_page.dart';
+
+import '../dogs_page/dogs_page.dart';
+import '../friends_page/friends_page.dart';
+import '../user_page/user_page.dart';
 
 class AppFrameAfterLogin extends StatefulWidget {
   const AppFrameAfterLogin({Key? key}) : super(key: key);
@@ -11,49 +13,30 @@ class AppFrameAfterLogin extends StatefulWidget {
 }
 
 class _AppFrameAfterLoginState extends State<AppFrameAfterLogin> {
-  Widget get appTitle {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        Icon(Icons.pets),
-        Text('Pow Pow Steps'),
-        Icon(Icons.pets),
-      ],
-    );
+  final _dogsPage = const DogsPage();
+  final _sharePage = const FriendsPage();
+  final _userPage = const UserPage();
+  final List<MyPage> _bodyOptions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _bodyOptions.addAll([_dogsPage, _sharePage, _userPage]);
   }
 
   int _selected = 0;
-  static const List<Widget> _bodyOptions = <Widget>[
-    DogsPage(),
-    FriendsPage(),
-    UserPage()
-  ];
 
   void _onItemTapped(int index) => setState(() => _selected = index);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            title: appTitle,
-            automaticallyImplyLeading: false,
-            centerTitle: true),
+        appBar: _bodyOptions[_selected].appBar(),
         body: _bodyOptions.elementAt(_selected),
         bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.pets),
-              label: 'Dogs',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Search',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'User',
-            ),
-          ],
+          items: _bodyOptions
+              .map((page) => page.bottomNavigationBarItem())
+              .toList(),
           currentIndex: _selected,
           selectedItemColor: Colors.amberAccent,
           onTap: _onItemTapped,
