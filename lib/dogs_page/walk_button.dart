@@ -62,18 +62,9 @@ class _WalkButtonState extends State<WalkButton> {
             ? walkRef.doc().snapshots()
             : walkRef.doc(widget.dog.walkingId).snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Text(
-              'Error',
-              style: TextStyle(color: Colors.red),
-            );
-          }
-
-          if (!snapshot.hasData) {
-            return const Text(
-              'No Data',
-              style: TextStyle(color: Colors.red),
-            );
+          if (snapshot.hasError || !snapshot.hasData) {
+            return const ElevatedButton(
+                onPressed: null, child: Icon(Icons.not_interested));
           }
 
           if (widget.dog.walkingId.isEmpty) {
