@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:walking_doggy/add_dog_page/add_dog_page.dart';
 import 'package:walking_doggy/app_frame/app_frame_after_login.dart';
+import 'package:walking_doggy/login_check/login_check.dart';
 
 import 'domain/User.dart';
 import 'initial/initial.dart';
@@ -27,8 +28,9 @@ class Main extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.yellow,
           ),
-          initialRoute: '/initial',
+          initialRoute: '/login_check',
           routes: {
+            '/login_check': (context) => const LoginCheck(),
             '/initial': (context) => const Initial(),
             '/register': (context) => const Register(),
             '/login': (context) => const Login(),
