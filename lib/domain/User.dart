@@ -44,4 +44,8 @@ class UserState extends ChangeNotifier {
     _user = user;
     notifyListeners();
   }
+
+  void signOut() {
+    _user = null;
+  }
 }

@@ -7,17 +7,18 @@ import '../domain/Dog.dart';
 import '../domain/User.dart';
 import '../util/firestore_util.dart';
 
-class FriendsPage extends StatefulWidget implements MyPage {
+class FriendsPage extends MyPage {
   const FriendsPage({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _FriendsPageState();
 
   @override
-  AppBar appBar() {
+  AppBar appBar(BuildContext context) {
     return AppBar(
       title: Text('Share Walk'),
       automaticallyImplyLeading: false,
+      actions: [logoutButton(context)],
     );
   }
 

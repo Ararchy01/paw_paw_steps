@@ -11,17 +11,18 @@ import '../domain/User.dart';
 import '../util/firestore_util.dart';
 import '../util/my_page.dart';
 
-class UserPage extends StatefulWidget implements MyPage {
+class UserPage extends MyPage {
   const UserPage({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _UserPageState();
 
   @override
-  AppBar appBar() {
+  AppBar appBar(BuildContext context) {
     return AppBar(
       title: Text('User'),
       automaticallyImplyLeading: false,
+      actions: [logoutButton(context)],
     );
   }
 
@@ -97,7 +98,7 @@ class _UserPageState extends State<UserPage> {
         onPressed: () async {
           if (_newImageFile != null) {
             final task = await FirebaseStorage.instance
-                .ref('dogs/{$_user.uid}')
+                .ref('users/{$_user.uid}')
                 .putFile(_newImageFile!);
             final _imageUrl = await task.ref.getDownloadURL();
             await _userRef.doc(_user.uid).update({'imageUrl': _imageUrl});

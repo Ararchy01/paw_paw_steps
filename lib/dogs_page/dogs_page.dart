@@ -11,17 +11,18 @@ import 'dog_list_item.dart';
 
 final dogRef = FirestoreUtil.DOG_REF;
 
-class DogsPage extends StatefulWidget implements MyPage {
+class DogsPage extends MyPage {
   const DogsPage({Key? key}) : super(key: key);
 
   @override
   State<DogsPage> createState() => _DogsPageState();
 
   @override
-  AppBar appBar() {
+  AppBar appBar(BuildContext context) {
     return AppBar(
       title: Text('Dogs'),
       automaticallyImplyLeading: false,
+      actions: [logoutButton(context)],
     );
   }
 

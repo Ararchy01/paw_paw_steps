@@ -14,6 +14,7 @@ class _InitialState extends State<Initial> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Pow Pow Steps'),
+          automaticallyImplyLeading: false,
         ),
         body: Center(
           child: IntrinsicWidth(
