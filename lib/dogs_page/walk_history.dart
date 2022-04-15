@@ -57,24 +57,29 @@ class _Item extends StatelessWidget {
   Widget get _walkTimeText {
     String _walkInfo;
     Color _color;
+
+    final _startAt = DateFormat('HH:mm').format(walk.startAt);
+    final _endAt = DateFormat('HH:mm').format(walk.endAt);
     if (walk.endAt.isAtSameMomentAs(walk.startAt)) {
-      _walkInfo = 'Walking now';
+      _walkInfo = 'Walking now $_startAt~';
       _color = Colors.blue;
     } else {
       if (walk.endAt.difference(DateTime.now()).inDays == 0) {
         if (walk.endAt.day == DateTime.now().day) {
-          _walkInfo = 'Today ${DateFormat('HH:mm').format(walk.endAt)}';
+          _walkInfo = 'Today $_startAt~$_endAt';
           _color = Colors.green;
         } else {
-          _walkInfo = 'Yesterday ${DateFormat('HH:mm').format(walk.endAt)}';
+          _walkInfo = 'Yesterday $_startAt~$_endAt';
           _color = Colors.deepPurple;
         }
       } else {
         _color = Colors.black;
         if (walk.endAt.year != DateTime.now().year) {
-          _walkInfo = DateFormat('yyyy-MM-dd HH:mm').format(walk.endAt);
+          _walkInfo =
+              '${DateFormat('yyyy MMM dd -').format(walk.endAt)} $_startAt~$_endAt';
         } else {
-          _walkInfo = DateFormat('MM-dd HH:mm').format(walk.endAt);
+          _walkInfo =
+              '${DateFormat('MMM dd -').format(walk.endAt)} $_startAt~$_endAt';
         }
       }
     }
@@ -91,21 +96,10 @@ class _Item extends StatelessWidget {
     }
     final _duration = walk.endAt.difference(walk.startAt);
     String _hours = '';
-    String _minutes = '';
-    final int _minute = _duration.inMinutes % 60;
-    if (_minute == 0 || _minute == 1) {
-      _minutes = '$_minute minute';
-    } else {
-      _minutes = '$_minute minutes';
-    }
     if (_duration.inMinutes > 59) {
-      if (_duration.inHours == 1) {
-        _hours = '${_duration.inHours} hour ';
-      } else {
-        _hours = '${_duration.inHours} hours ';
-      }
+      _hours = '${_duration.inHours}h ';
     }
-    return Text(' for $_hours$_minutes');
+    return Text(' ($_hours${_duration.inMinutes % 60}m)');
   }
 
   @override
