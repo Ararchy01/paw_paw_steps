@@ -33,6 +33,8 @@ class UserPage extends MyPage {
 }
 
 class _UserPageState extends State<UserPage> {
+  late User _user;
+  late UserState _userState;
   File? _newImageFile;
   final _userRef = FirestoreUtil.USER_REF;
   final _dogRef = FirestoreUtil.DOG_REF;
@@ -47,30 +49,55 @@ class _UserPageState extends State<UserPage> {
     }
   }
 
-  Widget image(String imageUrl) {
+  Widget get image {
     return SizedBox(
       height: 200,
       width: 200,
       child: _newImageFile != null
           ? CircleAvatar(backgroundImage: AssetImage(_newImageFile!.path))
-          : imageUrl.isNotEmpty
-              ? CircleAvatar(backgroundImage: NetworkImage(imageUrl))
+          : _user.imageUrl.isNotEmpty
+              ? CircleAvatar(backgroundImage: NetworkImage(_user.imageUrl))
               : const CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Icon(Icons.add_a_photo_outlined, size: 50)),
     );
   }
 
-  Widget imageButton(String userId) {
+  Widget get imageButton {
     return TextButton(
         onPressed: () async => await _pickImage(),
         child: const Text('Set Image',
             style: TextStyle(color: Colors.blueAccent)));
   }
 
-  Widget dogs(List<String> dogs) {
+  Widget get userName {
+    final _controller = TextEditingController(text: _user.name);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          height: 30,
+          width: 150,
+          child: TextField(
+              controller: _controller,
+              style: TextStyle(color: Colors.green, fontSize: 30)),
+        ),
+        IconButton(
+            onPressed: () async {
+              await _userRef
+                  .doc(_user.uid)
+                  .update({'name': _controller.value.text});
+              _user.name = _controller.value.text;
+              _userState.setUser(_user);
+            },
+            icon: Icon(Icons.change_circle))
+      ],
+    );
+  }
+
+  Widget get dogs {
     return StreamBuilder<QuerySnapshot<Dog>>(
-        stream: _dogRef.where('uid', whereIn: dogs).snapshots(),
+        stream: _dogRef.where('uid', whereIn: _user.dogs).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -92,8 +119,7 @@ class _UserPageState extends State<UserPage> {
         });
   }
 
-  Widget save(UserState userState) {
-    final _user = userState.getUser();
+  Widget get save {
     return ElevatedButton(
         onPressed: () async {
           if (_newImageFile != null) {
@@ -102,13 +128,8 @@ class _UserPageState extends State<UserPage> {
                 .putFile(_newImageFile!);
             final _imageUrl = await task.ref.getDownloadURL();
             await _userRef.doc(_user.uid).update({'imageUrl': _imageUrl});
-            // TODO
-            userState.setUser(User(
-                uid: _user.uid,
-                name: _user.name,
-                email: _user.email,
-                imageUrl: _imageUrl,
-                dogs: _user.dogs));
+            _user.imageUrl = _imageUrl;
+            _userState.setUser(_user);
           }
         },
         child: Text('Save Changes'));
@@ -116,18 +137,12 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _user = Provider.of<UserState>(context).getUser();
+    _userState = Provider.of<UserState>(context);
+    _user = _userState.getUser();
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          image(_user.imageUrl),
-          imageButton(_user.uid),
-          Text(_user.name,
-              style: const TextStyle(color: Colors.green, fontSize: 30)),
-          dogs(_user.dogs),
-          save(Provider.of<UserState>(context))
-        ],
+        children: [image, imageButton, userName, dogs, save],
       ),
     );
   }
