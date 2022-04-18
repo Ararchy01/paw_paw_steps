@@ -31,7 +31,6 @@ class _AppFrameAfterLoginState extends State<AppFrameAfterLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: _bodyOptions[_selected].appBar(context),
         body: _bodyOptions.elementAt(_selected),
         bottomNavigationBar: BottomNavigationBar(
           items: _bodyOptions

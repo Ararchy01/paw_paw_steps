@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../domain/Dog.dart';
-import '../domain/User.dart';
+import '../domain/User.dart' as my_user;
 import '../util/firestore_util.dart';
 import '../util/my_page.dart';
 
@@ -18,23 +19,14 @@ class UserPage extends MyPage {
   State<StatefulWidget> createState() => _UserPageState();
 
   @override
-  AppBar appBar(BuildContext context) {
-    return AppBar(
-      title: Text('User'),
-      automaticallyImplyLeading: false,
-      actions: [logoutButton(context)],
-    );
-  }
-
-  @override
   BottomNavigationBarItem bottomNavigationBarItem() {
     return BottomNavigationBarItem(icon: Icon(Icons.person), label: 'User');
   }
 }
 
 class _UserPageState extends State<UserPage> {
-  late User _user;
-  late UserState _userState;
+  late my_user.User _user;
+  late my_user.UserState _userState;
   File? _newImageFile;
   final _userRef = FirestoreUtil.USER_REF;
   final _dogRef = FirestoreUtil.DOG_REF;
@@ -137,12 +129,29 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
-    _userState = Provider.of<UserState>(context);
+    _userState = Provider.of<my_user.UserState>(context);
     _user = _userState.getUser();
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [image, imageButton, userName, dogs, save],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('User'),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Provider.of<my_user.UserState>(context, listen: false).signOut();
+              Navigator.pushNamed(context, '/initial');
+            },
+            tooltip: 'Log Out',
+          )
+        ],
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [image, imageButton, userName, dogs, save],
+        ),
       ),
     );
   }

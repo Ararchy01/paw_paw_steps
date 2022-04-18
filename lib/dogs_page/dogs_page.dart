@@ -18,15 +18,6 @@ class DogsPage extends MyPage {
   State<DogsPage> createState() => _DogsPageState();
 
   @override
-  AppBar appBar(BuildContext context) {
-    return AppBar(
-      title: Text('Dogs'),
-      automaticallyImplyLeading: false,
-      actions: [logoutButton(context)],
-    );
-  }
-
-  @override
   BottomNavigationBarItem bottomNavigationBarItem() {
     return BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Dogs');
   }
@@ -37,36 +28,42 @@ class _DogsPageState extends State<DogsPage> {
   Widget build(BuildContext context) {
     final _userId = Provider.of<UserState>(context).getUser().uid;
     return Scaffold(
-      body: StreamBuilder<QuerySnapshot<Dog>>(
-        stream: dogRef.where('walkersIds', arrayContains: _userId).snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error.toString()),
+        appBar: AppBar(
+          title: Text('Dogs'),
+          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(
+                onPressed: () => showModalBottomSheet(
+                    isScrollControlled: true,
+                    context: context,
+                    shape: const CircleBorder(),
+                    builder: (context) => const AddDogPage()),
+                icon: const Icon(Icons.add))
+          ],
+        ),
+        body: StreamBuilder<QuerySnapshot<Dog>>(
+          stream:
+              dogRef.where('walkersIds', arrayContains: _userId).snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(snapshot.error.toString()),
+              );
+            }
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final data = snapshot.requireData;
+            return ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: data.size,
+              itemBuilder: (context, index) {
+                return DogListItem(data.docs[index].data(),
+                    data.docs[index].reference, _userId);
+              },
             );
-          }
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final data = snapshot.requireData;
-          return ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: data.size,
-            itemBuilder: (context, index) {
-              return DogListItem(
-                  data.docs[index].data(), data.docs[index].reference, _userId);
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () => showModalBottomSheet(
-              isScrollControlled: true,
-              context: context,
-              shape: const CircleBorder(),
-              builder: (context) => const AddDogPage())),
-    );
+          },
+        ));
   }
 }

@@ -14,15 +14,6 @@ class ShareWalkPage extends MyPage {
   State<StatefulWidget> createState() => _ShareWalkPageState();
 
   @override
-  AppBar appBar(BuildContext context) {
-    return AppBar(
-      title: Text('Share Walk'),
-      automaticallyImplyLeading: false,
-      actions: [logoutButton(context)],
-    );
-  }
-
-  @override
   BottomNavigationBarItem bottomNavigationBarItem() {
     return BottomNavigationBarItem(icon: Icon(Icons.share), label: 'Share');
   }
@@ -75,8 +66,7 @@ class _ShareWalkPageState extends State<ShareWalkPage> {
                   backgroundColor: Colors.white,
                   child: Icon(Icons.image, size: 50))
           : const CircleAvatar(
-          backgroundColor: Colors.white,
-          child: Text('Not Found')),
+              backgroundColor: Colors.white, child: Text('Not Found')),
     );
   }
 
@@ -122,15 +112,21 @@ class _ShareWalkPageState extends State<ShareWalkPage> {
   @override
   Widget build(BuildContext context) {
     final _user = Provider.of<UserState>(context).getUser();
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          image,
-          emailTextBox,
-          searchButton,
-          dogs(_user),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Share Walk'),
+        automaticallyImplyLeading: false,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            image,
+            emailTextBox,
+            searchButton,
+            dogs(_user),
+          ],
+        ),
       ),
     );
   }
