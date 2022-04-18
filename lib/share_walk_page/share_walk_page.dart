@@ -7,11 +7,11 @@ import '../domain/Dog.dart';
 import '../domain/User.dart';
 import '../util/firestore_util.dart';
 
-class FriendsPage extends MyPage {
-  const FriendsPage({Key? key}) : super(key: key);
+class ShareWalkPage extends MyPage {
+  const ShareWalkPage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _FriendsPageState();
+  State<StatefulWidget> createState() => _ShareWalkPageState();
 
   @override
   AppBar appBar(BuildContext context) {
@@ -28,7 +28,7 @@ class FriendsPage extends MyPage {
   }
 }
 
-class _FriendsPageState extends State<FriendsPage> {
+class _ShareWalkPageState extends State<ShareWalkPage> {
   final _userRef = FirestoreUtil.USER_REF;
   final _dogRef = FirestoreUtil.DOG_REF;
   final _emailController = TextEditingController();
@@ -74,7 +74,9 @@ class _FriendsPageState extends State<FriendsPage> {
               : const CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Icon(Icons.image, size: 50))
-          : SizedBox(),
+          : const CircleAvatar(
+          backgroundColor: Colors.white,
+          child: Text('Not Found')),
     );
   }
 
@@ -148,41 +150,75 @@ class _DogList extends StatelessWidget {
       required this.friendRef})
       : super(key: key);
 
-  Future<void> _onShareWalkPressed() async {
-    final batch = FirebaseFirestore.instance.batch();
-    batch.update(friendRef!, {
-      'dogs': FieldValue.arrayUnion([dog.uid])
-    });
-    batch.update(dogRef, {
-      'walkersIds': FieldValue.arrayUnion([friend!.uid])
-    });
-    await batch.commit();
-    dog.walkersIds.add(friend!.uid);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final bool isFriendSelected = friend != null;
-    final bool isDogShared =
-        friend != null ? friend!.dogs.contains(dog.uid) : false;
     return Card(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           CircleAvatar(backgroundImage: NetworkImage(dog.imageUrl)),
           Text(dog.name),
-          ElevatedButton(
-            onPressed: isFriendSelected && !isDogShared
-                ? () => _onShareWalkPressed()
-                : null,
-            child: isFriendSelected
-                ? isDogShared
-                    ? Text('Already Shared')
-                    : Text('Share Walk')
-                : Icon(Icons.not_interested),
-          )
+          _DogShareButton(
+              dog: dog, dogRef: dogRef, friend: friend, friendRef: friendRef)
         ],
       ),
+    );
+  }
+}
+
+class _DogShareButton extends StatefulWidget {
+  final Dog dog;
+  final DocumentReference<Dog> dogRef;
+  final User? friend;
+  final DocumentReference<User>? friendRef;
+
+  const _DogShareButton(
+      {Key? key,
+      required this.dog,
+      required this.dogRef,
+      required this.friend,
+      required this.friendRef})
+      : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _DogShareButtonState();
+}
+
+class _DogShareButtonState extends State<_DogShareButton> {
+  late bool _isFriendSelected;
+  late bool _isDogShared;
+
+  Future<void> _onShareWalkPressed() async {
+    final batch = FirebaseFirestore.instance.batch();
+    batch.update(widget.friendRef!, {
+      'dogs': FieldValue.arrayUnion([widget.dog.uid])
+    });
+    batch.update(widget.dogRef, {
+      'walkersIds': FieldValue.arrayUnion([widget.friend!.uid])
+    });
+    await batch.commit();
+    setState(() {
+      widget.dog.walkersIds.add(widget.friend!.uid);
+      widget.friend!.dogs.add(widget.dog.uid);
+      _isDogShared = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _isFriendSelected = widget.friend != null;
+    _isDogShared = widget.friend != null
+        ? widget.friend!.dogs.contains(widget.dog.uid)
+        : false;
+    return ElevatedButton(
+      onPressed: _isFriendSelected && !_isDogShared
+          ? () => _onShareWalkPressed()
+          : null,
+      child: _isFriendSelected
+          ? _isDogShared
+              ? Text('Already Shared')
+              : Text('Share Walk')
+          : Icon(Icons.not_interested),
     );
   }
 }

@@ -91,7 +91,8 @@ class _WalkButtonState extends State<WalkButton> {
           }
           return ElevatedButton(
               onPressed: _onAccompanyWalkPressed,
-              child: const Text('Accompany Walk'));
+              child: const Text('Accompany Walk'),
+              style: ElevatedButton.styleFrom(primary: Colors.cyan));
         });
   }
 }

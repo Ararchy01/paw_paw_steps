@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:walking_doggy/util/my_page.dart';
 
 import '../dogs_page/dogs_page.dart';
-import '../friends_page/friends_page.dart';
+import '../share_walk_page/share_walk_page.dart';
 import '../user_page/user_page.dart';
 
 class AppFrameAfterLogin extends StatefulWidget {
@@ -14,7 +14,7 @@ class AppFrameAfterLogin extends StatefulWidget {
 
 class _AppFrameAfterLoginState extends State<AppFrameAfterLogin> {
   final _dogsPage = const DogsPage();
-  final _sharePage = const FriendsPage();
+  final _sharePage = const ShareWalkPage();
   final _userPage = const UserPage();
   final List<MyPage> _bodyOptions = [];
 
