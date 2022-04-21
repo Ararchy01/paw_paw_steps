@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:walking_doggy/update_dog_page/update_dog_page.dart';
 
 import '../domain/Dog.dart';
 import 'walk_button.dart';
@@ -40,6 +41,22 @@ class DogListItem extends StatelessWidget {
     );
   }
 
+  Widget edit(BuildContext context) {
+    if (userId != dog.ownerId) {
+      return SizedBox();
+    }
+    return TextButton(
+        onPressed: () => showModalBottomSheet(
+            isScrollControlled: true,
+            context: context,
+            shape: const CircleBorder(),
+            builder: (context) => UpdateDogPage(dog: dog)),
+        child: const Text(
+          'Edit',
+          style: TextStyle(color: Colors.blueAccent),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -48,9 +65,11 @@ class DogListItem extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(4),
           child: Column(children: [
-            Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [image, Flexible(child: details)]),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+              image,
+              Flexible(child: details),
+              Flexible(child: edit(context))
+            ]),
             Flexible(child: WalkHistory(dog: dog))
           ]),
         ),

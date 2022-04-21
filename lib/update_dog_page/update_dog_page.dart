@@ -1,56 +1,49 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 
 import '../domain/Dog.dart';
-import '../domain/User.dart';
 import '../util/firestore_util.dart';
 
 final dogRef = FirestoreUtil.DOG_REF;
 
 class UpdateDogPage extends StatefulWidget {
+  final Dog dog;
+
+  const UpdateDogPage({Key? key, required this.dog}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => _UpdateDogPageState();
 }
 
 class _UpdateDogPageState extends State<UpdateDogPage> {
   File? _imageFile;
-  String _imageButtonText = 'Add Image';
-  final _nameController = TextEditingController();
+  TextEditingController? _nameController;
 
   Future<void> _pickImage() async {
     final _pickedImage =
-    await ImagePicker().pickImage(source: ImageSource.gallery);
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (_pickedImage != null) {
       setState(() {
         _imageFile = File(_pickedImage.path);
-        _imageButtonText = 'Change Image';
       });
     }
   }
 
-  Future<void> _onAddPressed(String userId) async {
+  Future<void> _onChangePressed() async {
     final doc = dogRef.doc();
-    String? imageURL;
+    String _imageUrl = widget.dog.imageUrl;
     if (_imageFile != null) {
       final task = await FirebaseStorage.instance
           .ref('dogs/${doc.id}')
           .putFile(_imageFile!);
-      imageURL = await task.ref.getDownloadURL();
+      _imageUrl = await task.ref.getDownloadURL();
     }
-    final _newDog = Dog(
-        uid: doc.id,
-        name: _nameController.value.text,
-        imageUrl: imageURL!,
-        walkingId: '',
-        walkersIds: [userId]);
-    final batch = await FirebaseFirestore.instance.batch();
-    batch.set(doc, _newDog);
-    await batch.commit();
+    dogRef
+        .doc(widget.dog.uid)
+        .update({'imageUrl': _imageUrl, 'name': _nameController!.value.text});
     Navigator.pop(context);
   }
 
@@ -60,18 +53,14 @@ class _UpdateDogPageState extends State<UpdateDogPage> {
       width: 200,
       child: _imageFile != null
           ? CircleAvatar(backgroundImage: AssetImage(_imageFile!.path))
-          : const CircleAvatar(
-          backgroundColor: Colors.white,
-          child: Icon(Icons.add_a_photo_outlined, size: 50)),
+          : CircleAvatar(backgroundImage: NetworkImage(widget.dog.imageUrl)),
     );
   }
 
   Widget get imageButton {
     return TextButton(
-        onPressed: () async {
-          await _pickImage();
-        },
-        child: Text(_imageButtonText,
+        onPressed: () async => await _pickImage(),
+        child: Text('Change Image',
             style: const TextStyle(color: Colors.blueAccent)));
   }
 
@@ -84,26 +73,20 @@ class _UpdateDogPageState extends State<UpdateDogPage> {
         ));
   }
 
-  Widget addButton(String userId) {
+  Widget get updateButton {
     return ElevatedButton(
-        child: const Text('Add'),
-        onPressed: () async => await _onAddPressed(userId));
+        child: const Text('Update'),
+        onPressed: () async => await _onChangePressed());
   }
 
   @override
   Widget build(BuildContext context) {
-    final _userState = Provider.of<UserState>(context);
+    _nameController = TextEditingController(text: widget.dog.name);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          image,
-          imageButton,
-          name,
-          addButton(_userState.getUser().uid)
-        ],
+        children: [image, imageButton, name, updateButton],
       ),
     );
   }
-
 }
