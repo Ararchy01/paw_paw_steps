@@ -1,13 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:walking_doggy/add_dog_page/add_dog_page.dart';
-import 'package:walking_doggy/app_frame/app_frame_after_login.dart';
-import 'package:walking_doggy/login_check/login_check.dart';
 
+import 'add_dog_page/add_dog_page.dart';
+import 'app_frame/app_frame_after_login.dart';
 import 'domain/User.dart';
 import 'initial/initial.dart';
 import 'login/login.dart';
+import 'login_check/login_check.dart';
 import 'register/register.dart';
 
 void main() async {
@@ -24,7 +24,7 @@ class Main extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => UserState(),
       child: MaterialApp(
-          title: 'Pow Pow Steps',
+          title: 'Paw Paw Steps',
           theme: ThemeData(
             primarySwatch: Colors.yellow,
           ),

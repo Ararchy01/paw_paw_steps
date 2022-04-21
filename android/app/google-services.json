@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:956369174652:android:40328054c2d612023ac9f9",
+        "mobilesdk_app_id": "1:956369174652:android:36126286f53bf05c3ac9f9",
         "android_client_info": {
-          "package_name": "com.alaland.walking_doggy.walking_doggy"
+          "package_name": "com.alaland.paw_paw_steps.paw_paw_steps"
         }
       },
       "oauth_client": [
@@ -31,10 +31,10 @@
               "client_type": 3
             },
             {
-              "client_id": "956369174652-9hb7mnbmfr4cfhfcc5fl4lkakqindju0.apps.googleusercontent.com",
+              "client_id": "956369174652-2pecuv8asfjqpsa5j9i2f9eg037e1bp3.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.alaland.walkingdoggy.walkingDoggy"
+                "bundle_id": "com.alaland.pawpawsteps.pawPawSteps"
               }
             }
           ]

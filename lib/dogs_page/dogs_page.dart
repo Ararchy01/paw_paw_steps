@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:walking_doggy/util/firestore_util.dart';
-import 'package:walking_doggy/util/my_page.dart';
 
 import '../add_dog_page/add_dog_page.dart';
 import '../domain/Dog.dart';
 import '../domain/User.dart';
+import '../util/firestore_util.dart';
+import '../util/my_page.dart';
 import 'dog_list_item.dart';
 
 final dogRef = FirestoreUtil.DOG_REF;

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.alaland.walking_doggy.walking_doggy">
+    package="com.alaland.paw_paw_steps.paw_paw_steps">
    <application
-        android:label="walking_doggy"
+        android:label="paw_paw_steps"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:walking_doggy/util/my_page.dart';
 
 import '../dogs_page/dogs_page.dart';
 import '../share_walk_page/share_walk_page.dart';
 import '../user_page/user_page.dart';
+import '../util/my_page.dart';
 
 class AppFrameAfterLogin extends StatefulWidget {
   const AppFrameAfterLogin({Key? key}) : super(key: key);
