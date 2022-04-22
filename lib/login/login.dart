@@ -2,8 +2,9 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:walking_doggy/domain/User.dart' as user_domain;
-import 'package:walking_doggy/util/firestore_util.dart';
+
+import '../domain/User.dart' as user_domain;
+import '../util/firestore_util.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);

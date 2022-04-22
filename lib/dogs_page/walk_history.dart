@@ -141,22 +141,21 @@ class _WalkersIcons extends StatelessWidget {
           }
           final data = snapshot.requireData;
           return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: data.docs.map((e) {
-              final user = e.data();
-              return Padding(
-                padding: const EdgeInsets.all(2),
-                child: SizedBox(
-                    height: 25,
-                    child: user.imageUrl.isNotEmpty
-                        ? CircleAvatar(
-                            backgroundImage: NetworkImage(user.imageUrl))
-                        : CircleAvatar(
-                            backgroundColor: Colors.green,
-                            child: Text(user.name.substring(0, 1)))),
-              );
-            }).toList(),
-          );
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: data.docs.map((e) {
+                final user = e.data();
+                return Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: SizedBox(
+                      height: 25,
+                      child: user.imageUrl.isNotEmpty
+                          ? CircleAvatar(
+                              backgroundImage: NetworkImage(user.imageUrl))
+                          : CircleAvatar(
+                              backgroundColor: Colors.green,
+                              child: Text(user.name.substring(0, 1)))),
+                );
+              }).toList());
         });
   }
 }

@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:walking_doggy/util/firestore_util.dart';
 
 import '../domain/User.dart';
+import '../util/firestore_util.dart';
 
 class LoginCheck extends StatefulWidget {
   const LoginCheck({Key? key}) : super(key: key);

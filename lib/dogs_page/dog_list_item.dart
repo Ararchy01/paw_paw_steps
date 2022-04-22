@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:walking_doggy/update_dog_page/update_dog_page.dart';
 
 import '../domain/Dog.dart';
+import '../update_dog_page/update_dog_page.dart';
 import 'walk_button.dart';
 import 'walk_history.dart';
 

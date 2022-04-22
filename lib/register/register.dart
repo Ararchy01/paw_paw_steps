@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:walking_doggy/domain/User.dart' as user_domain;
 
+import '../domain/User.dart' as user_domain;
 import '../util/firestore_util.dart';
 
 class Register extends StatefulWidget {

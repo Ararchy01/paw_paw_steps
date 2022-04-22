@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:walking_doggy/util/my_page.dart';
 
 import '../domain/Dog.dart';
 import '../domain/User.dart';
 import '../util/firestore_util.dart';
+import '../util/my_page.dart';
 
 class ShareWalkPage extends MyPage {
   const ShareWalkPage({Key? key}) : super(key: key);

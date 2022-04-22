@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:walking_doggy/domain/User.dart';
 
 import '../domain/Dog.dart';
+import '../domain/User.dart';
 import '../domain/Walk.dart';
 
 class FirestoreUtil {
