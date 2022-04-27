@@ -146,14 +146,21 @@ class _WalkersIcons extends StatelessWidget {
                 final user = e.data();
                 return Padding(
                   padding: const EdgeInsets.all(2),
-                  child: SizedBox(
+                  child: Column(children: [
+                    SizedBox(
                       height: 25,
                       child: user.imageUrl.isNotEmpty
                           ? CircleAvatar(
                               backgroundImage: NetworkImage(user.imageUrl))
                           : CircleAvatar(
                               backgroundColor: Colors.green,
-                              child: Text(user.name.substring(0, 1)))),
+                              child: Text(user.name.substring(0, 1))),
+                    ),
+                    Text(
+                      user.name,
+                      style: TextStyle(fontSize: 10),
+                    )
+                  ]),
                 );
               }).toList());
         });
