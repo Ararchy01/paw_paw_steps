@@ -28,66 +28,69 @@ class _RegisterState extends State<Register> {
       appBar: AppBar(
         title: const Text('Register'),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TextField(
-            controller: _nameController,
-            decoration: const InputDecoration(labelText: 'Name'),
-          ),
-          TextField(
-            controller: _emailController,
-            decoration: const InputDecoration(labelText: 'Email'),
-          ),
-          TextField(
-            controller: _passwordController,
-            obscureText: true,
-            decoration: const InputDecoration(labelText: 'Password'),
-          ),
-          TextField(
-            controller: _confirmPasswordController,
-            obscureText: true,
-            decoration: const InputDecoration(labelText: 'Confirm Password'),
-          ),
-          ElevatedButton(
-            child: const Text('Register'),
-            onPressed: () async {
-              try {
-                // TODO Validation
-                final name = _nameController.value.text;
-                final email = _emailController.value.text;
-                final password = _passwordController.value.text;
-                final confirmPassword = _confirmPasswordController.value.text;
-                final userCredential =
-                    await _auth.createUserWithEmailAndPassword(
-                        email: email, password: password);
-                final user = userCredential.user;
+      body: Padding(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'Name'),
+            ),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+            ),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Password'),
+            ),
+            TextField(
+              controller: _confirmPasswordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Confirm Password'),
+            ),
+            ElevatedButton(
+              child: const Text('Register'),
+              onPressed: () async {
+                try {
+                  // TODO Validation
+                  final name = _nameController.value.text;
+                  final email = _emailController.value.text;
+                  final password = _passwordController.value.text;
+                  final confirmPassword = _confirmPasswordController.value.text;
+                  final userCredential =
+                      await _auth.createUserWithEmailAndPassword(
+                          email: email, password: password);
+                  final user = userCredential.user;
 
-                if (user != null) {
-                  final _user = user_domain.User(
-                      uid: user.uid,
-                      name: name,
-                      email: email,
-                      imageUrl: '',
-                      dogs: []);
-                  await _userRef.doc(user.uid).set(_user);
-                  _userState.setUser(_user);
-                  Navigator.pushNamed(context, '/after_login');
+                  if (user != null) {
+                    final _user = user_domain.User(
+                        uid: user.uid,
+                        name: name,
+                        email: email,
+                        imageUrl: '',
+                        dogs: []);
+                    await _userRef.doc(user.uid).set(_user);
+                    _userState.setUser(_user);
+                    Navigator.pushNamed(context, '/after_login');
+                  }
+                } on FirebaseAuthException catch (e) {
+                  final snackBar = SnackBar(
+                    backgroundColor: Colors.red,
+                    content: Text(e.toString()),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
-              } on FirebaseAuthException catch (e) {
-                final snackBar = SnackBar(
-                  backgroundColor: Colors.red,
-                  content: Text(e.toString()),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              }
-            },
-          ),
-          TextButton(
-              child: const Text('Already user? Login',
-                  style: TextStyle(color: Colors.blueAccent)),
-              onPressed: () => Navigator.pushNamed(context, '/login'))
-        ],
+              },
+            ),
+            TextButton(
+                child: const Text('Already user? Login',
+                    style: TextStyle(color: Colors.blueAccent)),
+                onPressed: () => Navigator.pushNamed(context, '/login'))
+          ],
+        ),
       ),
     );
   }

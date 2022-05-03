@@ -44,6 +44,9 @@ class _UserPageState extends State<UserPage> {
   }
 
   Widget get dogs {
+    if (_user.dogs.isEmpty) {
+      return const SizedBox();
+    }
     return StreamBuilder<QuerySnapshot<Dog>>(
         stream: _dogRef.where('uid', whereIn: _user.dogs).snapshots(),
         builder: (context, snapshot) {

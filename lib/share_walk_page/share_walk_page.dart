@@ -71,6 +71,9 @@ class _ShareWalkPageState extends State<ShareWalkPage> {
   }
 
   Widget dogs(User user) {
+    if (user.dogs.isEmpty) {
+      return const SizedBox();
+    }
     return StreamBuilder<QuerySnapshot<Dog>>(
         stream: _dogRef
             .where('uid', whereIn: user.dogs)
