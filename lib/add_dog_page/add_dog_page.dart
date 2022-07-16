@@ -21,6 +21,8 @@ class AddDogPage extends StatefulWidget {
 }
 
 class _AddDogPageState extends State<AddDogPage> {
+  late UserState _userState;
+  late User _user;
   File? _imageFile;
   String _imageButtonText = 'Add Image';
   final _nameController = TextEditingController();
@@ -36,7 +38,7 @@ class _AddDogPageState extends State<AddDogPage> {
     }
   }
 
-  Future<void> _onAddPressed(String userId) async {
+  Future<void> _onAddPressed() async {
     final doc = dogRef.doc();
     String? imageURL;
     if (_imageFile != null) {
@@ -50,13 +52,15 @@ class _AddDogPageState extends State<AddDogPage> {
         name: _nameController.value.text,
         imageUrl: imageURL!,
         walkingId: '',
-        walkersIds: [userId],
-        ownerId: userId);
+        walkersIds: [_user.uid],
+        ownerId: _user.uid);
     final batch = await FirebaseFirestore.instance.batch();
     batch.set(doc, _newDog);
-    batch.update(userRef.doc(userId), {
+    batch.update(userRef.doc(_user.uid), {
       'dogs': FieldValue.arrayUnion([doc.id])
     });
+    _user.dogs.add(_newDog.uid);
+    _userState.setUser(_user);
     await batch.commit();
     Navigator.pop(context);
   }
@@ -91,24 +95,19 @@ class _AddDogPageState extends State<AddDogPage> {
         ));
   }
 
-  Widget addButton(String userId) {
+  Widget get addButton {
     return ElevatedButton(
-        child: const Text('Add'),
-        onPressed: () async => await _onAddPressed(userId));
+        child: const Text('Add'), onPressed: () async => await _onAddPressed());
   }
 
   @override
   Widget build(BuildContext context) {
-    final _userState = Provider.of<UserState>(context);
+    _userState = Provider.of<UserState>(context);
+    _user = _userState.getUser();
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          image,
-          imageButton,
-          name,
-          addButton(_userState.getUser().uid)
-        ],
+        children: [image, imageButton, name, addButton],
       ),
     );
   }
