@@ -5,14 +5,14 @@ import 'package:provider/provider.dart';
 import '../domain/User.dart' as user_domain;
 import '../util/firestore_util.dart';
 
-class Register extends StatefulWidget {
-  const Register({Key? key}) : super(key: key);
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
-  _RegisterState createState() => _RegisterState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _RegisterState extends State<Register> {
+class _RegisterPageState extends State<RegisterPage> {
   final _auth = FirebaseAuth.instance;
   final _userRef = FirestoreUtil.USER_REF;
   final _nameController = TextEditingController();
@@ -88,7 +88,7 @@ class _RegisterState extends State<Register> {
             TextButton(
                 child: const Text('Already user? Login',
                     style: TextStyle(color: Colors.blueAccent)),
-                onPressed: () => Navigator.pushNamed(context, '/login'))
+                onPressed: () => Navigator.pushNamed(context, '/login_page'))
           ],
         ),
       ),

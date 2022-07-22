@@ -6,14 +6,14 @@ import 'package:provider/provider.dart';
 import '../domain/User.dart' as user_domain;
 import '../util/firestore_util.dart';
 
-class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<Login> createState() => _LoginState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginPageState extends State<LoginPage> {
   final _auth = FirebaseAuth.instance;
   final _userRef = FirestoreUtil.USER_REF;
   final TextEditingController _emailController = TextEditingController();
@@ -97,7 +97,7 @@ class _LoginState extends State<Login> {
                 TextButton(
                     child: const Text('First time? Register',
                         style: TextStyle(color: Colors.blueAccent)),
-                    onPressed: () => Navigator.pushNamed(context, '/register'))
+                    onPressed: () => Navigator.pushNamed(context, '/register_page'))
               ],
             ),
           ),

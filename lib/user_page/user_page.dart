@@ -94,7 +94,7 @@ class _UserPageState extends State<UserPage> {
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
               Provider.of<my_user.UserState>(context, listen: false).signOut();
-              Navigator.pushNamed(context, '/initial');
+              Navigator.pushNamed(context, '/initial_page');
             },
             tooltip: 'Log Out',
           )

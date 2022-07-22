@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Initial extends StatefulWidget {
-  const Initial({Key? key}) : super(key: key);
+class InitialPage extends StatefulWidget {
+  const InitialPage({Key? key}) : super(key: key);
 
   @override
-  State<Initial> createState() => _InitialState();
+  State<InitialPage> createState() => _InitialPageState();
 }
 
-class _InitialState extends State<Initial> {
+class _InitialPageState extends State<InitialPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,11 +31,11 @@ class _InitialState extends State<Initial> {
                   ),
                   ElevatedButton(
                     child: const Text('Register'),
-                    onPressed: () => Navigator.pushNamed(context, '/register'),
+                    onPressed: () => Navigator.pushNamed(context, '/register_page'),
                   ),
                   ElevatedButton(
                     child: const Text('Login'),
-                    onPressed: () => Navigator.pushNamed(context, '/login'),
+                    onPressed: () => Navigator.pushNamed(context, '/login_page'),
                   ),
                 ]),
           ),

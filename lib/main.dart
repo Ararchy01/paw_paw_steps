@@ -5,10 +5,10 @@ import 'package:provider/provider.dart';
 import 'add_dog_page/add_dog_page.dart';
 import 'app_frame/app_frame_after_login.dart';
 import 'domain/User.dart';
-import 'initial/initial.dart';
-import 'login/login.dart';
+import 'initial_page/initial_page.dart';
+import 'login_page/login_page.dart';
 import 'login_check/login_check.dart';
-import 'register/register.dart';
+import 'register_page/register_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,9 +31,9 @@ class Main extends StatelessWidget {
           initialRoute: '/login_check',
           routes: {
             '/login_check': (context) => const LoginCheck(),
-            '/initial': (context) => const Initial(),
-            '/register': (context) => const Register(),
-            '/login': (context) => const Login(),
+            '/initial_page': (context) => const InitialPage(),
+            '/register_page': (context) => const RegisterPage(),
+            '/login_page': (context) => const LoginPage(),
             '/add_dog_page': (context) => const AddDogPage(),
             '/after_login': (context) => const AppFrameAfterLogin()
           }),

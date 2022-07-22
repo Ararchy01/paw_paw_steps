@@ -17,14 +17,14 @@ class _LoginCheckState extends State<LoginCheck> {
     final currentUser = await FirebaseAuth.instance.currentUser;
     final userState = Provider.of<UserState>(context, listen: false);
     if (currentUser == null) {
-      Navigator.pushReplacementNamed(context, "/initial");
+      Navigator.pushReplacementNamed(context, "/initial_page");
     } else {
       final _user = await FirestoreUtil.USER_REF.doc(currentUser.uid).get();
       if (_user.exists) {
         userState.setUser(_user.data()!);
         Navigator.pushReplacementNamed(context, "/after_login");
       } else {
-        Navigator.pushReplacementNamed(context, "/initial");
+        Navigator.pushReplacementNamed(context, "/initial_page");
       }
     }
   }
