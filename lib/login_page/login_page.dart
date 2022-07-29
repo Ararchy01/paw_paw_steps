@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -69,11 +71,9 @@ class _LoginPageState extends State<LoginPage> {
                   child: const Text('Login'),
                   onPressed: () async {
                     if (_formKey.currentState == null) {
-                      // TODO
-                      print('Formkey currentState is null');
+                      log('Formkey currentState is null');
                     } else if (!_formKey.currentState!.validate()) {
-                      // TODO
-                      print(_formKey.currentState);
+                      log(_formKey.currentState.toString());
                     } else {
                       try {
                         final userCredential =
@@ -88,8 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.pushNamed(context, '/after_login');
                         }
                       } on FirebaseAuthException catch (e) {
-                        // TODO
-                        print(e);
+                        log(e.stackTrace.toString());
                       }
                     }
                   },
